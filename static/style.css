@@ -1,21 +1,23 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: rgb(244, 243, 237);
   }
   .login {
     position: absolute;
-    background-color: white;
-    width: 25%;
-    height: 250px;
+    border: 2px solid #F5F5F5;
+    width: 30%;
+    height: 500px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ với màu đen và độ trong suốt 0.1 */
   }
-  
+  h2.Dang_nhap {
+    text-align: center;
+    font-size: 40px;
+  }
   
   form {
-    width: 300px;
+    width: 60%;
     margin: 0 auto;
   }
   label {
@@ -23,16 +25,20 @@ body {
     margin-top: 10px;
   }
   input[type="text"], input[type="password"] {
-    width: 100%;
+    width: 92%;
+    height: 40px;
     padding: 5px;
     margin-top: 5px;
   }
   input[type="submit"] {
+    width: 40%;
     padding: 5px;
-    width: 100px;
-    margin-top: 10px;
-    background-color: #4CAF50;
-    color: white;
+    margin-top: 15px;
+    background-color: #DCDCDC;
+    color: black;
     border: none;
     cursor: pointer;
+  }
+  #dangky{
+    margin-left: 10px;
   }

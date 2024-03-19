@@ -7,22 +7,21 @@
       rel="stylesheet"
       type="text/css"
       href="{{ url_for('static',filename='style.css') }}"
-      
     />
     </head>
     <body>
         <div class="login">
-            <form action="/login" method="post">
-                <h2> Đăng nhập tài khoản </h2>
-                <label for="username">Tên tài khoản:</label>
+            <form action="/login" method="POST">
+                <h2 class = 'Dang_nhap'> Đăng nhập</h2>
+                <label for="username">Tài khoản</label>
                 <input type="text" id="username" name="username">
-                <label for="password">Mật khẩu:</label>
+                <label for="password">Mật khẩu</label>
                 <input type="password" id="password" name="password">
                 <div class="button">
-                    <input type="submit" value="Đăng nhập">
-                    <input type="submit" value="Đăng ký">
+                    <input type="submit" value="Đăng nhập" onclick="document.getElementById('id01').style.display='none'"/>
+                    <input type="submit" value="Đăng ký" id = "dangky">
                 </div>
-              </form>
+            </form>
         </div>
     </body>
 </html>
