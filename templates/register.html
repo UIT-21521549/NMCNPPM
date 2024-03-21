@@ -7,19 +7,19 @@
       rel="stylesheet"
       type="text/css"
       href="{{ url_for('static',filename='style.css') }}"
+      
     />
     </head>
     <body>
-        <div class="login">
-            <form action="/login" method="POST">
-                <h2 class = 'Dang_nhap'> Đăng nhập</h2>
+        <div class="register">
+            <form action="/register" method="POST">
+                <h2 class = 'Dang_nhap'> Đăng Ký</h2>
                 <label for="username">Tài khoản</label>
                 <input type="text" id="username" name="username">
                 <label for="password">Mật khẩu</label>
                 <input type="password" id="password" name="password">
                 <div class="button">
-                    <input type="submit" value="Đăng nhập"  name="action"/>
-                    <input type="submit" value="Đăng ký" name="action" id="01">
+                    <input type="submit" value="Đăng ký" name="action-2" id ='02'>
                 </div>
             </form>
         </div>

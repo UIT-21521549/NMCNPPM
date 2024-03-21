@@ -11,6 +11,16 @@ body {
     transform: translate(-50%, -50%);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ với màu đen và độ trong suốt 0.1 */
   }
+  .register {
+    position: absolute;
+    border: 2px solid #F5F5F5;
+    width: 30%;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ với màu đen và độ trong suốt 0.1 */
+  }
   h2.Dang_nhap {
     text-align: center;
     font-size: 40px;
@@ -31,6 +41,15 @@ body {
     margin-top: 5px;
   }
   input[type="submit"] {
+    width: 40%;
+    padding: 5px;
+    margin-top: 15px;
+    background-color: #DCDCDC;
+    color: black;
+    border: none;
+    cursor: pointer;
+  }
+  #dangky {
     width: 40%;
     padding: 5px;
     margin-top: 15px;

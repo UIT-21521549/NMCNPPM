@@ -24,3 +24,23 @@ def user_login(acc, pas):
     if b != pas:
         return None
     return result
+
+def user_register(acc ,pas):
+    server = 'LAPTOP-3011TS14'
+    database = 'NMCNPM'
+    connection_string = f'DRIVER=ODBC Driver 17 for SQL Server;SERVER={server};DATABASE={database};Trusted_Connection=yes'
+    #check value in text box
+    if acc == '' or pas == '':
+        return False
+    # Establish connection to the database
+    conn = pyodbc.connect(connection_string)
+    cursor = conn.cursor()
+
+    # Execute the query
+    query = f"SELECT acc,pass,acess FROM login_user WHERE acc='{acc}'"
+    check = cursor.execute(query)
+    if check  == None:
+        return False
+    # Fetch the result
+    conn.close()
+    return True
