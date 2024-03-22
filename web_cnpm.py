@@ -9,12 +9,11 @@ def login():
 
 @app.route('/login', methods=['GET','POST'])
 def login_check():
-    username = request.form.get('username')
-    password = request.form.get('password')
+    user = User(request.form.get('username'), request.form.get('password'))
     action = request.form.get('action')
     action2 = request.form.get('01')
     if action == 'Đăng nhập':
-        if user_login(username, password) is not None:                                          
+        if user.user_login() is not None:                                          
             return redirect('/home')
         else:
             return render_template('index.html')
@@ -24,11 +23,10 @@ def login_check():
 
 @app.route('/register', methods=['GET','POST'])
 def register():
-    username = request.form.get('username')
-    password = request.form.get('password')
+    user = User(request.form.get('username'), request.form.get('password'))
     if request.method == 'GET':
         return render_template('register.html')
-    if user_register(username, password) == True:
+    if user.user_register() == True:
         return redirect('/login')
     return render_template('register.html')
 
