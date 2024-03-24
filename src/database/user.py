@@ -1,7 +1,7 @@
 from sqlalchemy import select
 import jwt
-
-import datetime
+import os
+from datetime import datetime, timezone, timedelta
 
 
 class User:
@@ -69,13 +69,14 @@ class User:
         if user is None:
             return None
 
-        username, password, access = user
+        # username, password, access = user
+        access = "dfdsds"
 
         payload = {
             "username": username,
             "access": access,
             # hết hạng sau 1 ngày
-            "exp": datetime.now(tz=timezone.utc) + 1 * 24 * 60 * 60,
+            "exp": datetime.now(tz=timezone.utc) + timedelta(days=1),
         }
 
         token = jwt.encode(payload, jwt_secret, algorithm="HS256")

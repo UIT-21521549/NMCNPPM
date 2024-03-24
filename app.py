@@ -16,6 +16,8 @@ from src.database import user
 app = Flask(__name__)
 
 
+# TODO: redo the routings
+
 @app.route("/")
 def login():
     return render_template("index.html")
@@ -33,7 +35,7 @@ def login_check():
     # TODO: verify session_token
     if session_token:
         # already logged in
-        return redirect("index.html")
+        return redirect("/")
 
     username = request.form.get("username")
     password = request.form.get("password")
@@ -43,7 +45,7 @@ def login_check():
     if token == None:
         return redirect("/login")
 
-    resp = make_response(render_template(index.html))
+    resp = make_response(redirect("/"))
     resp.set_cookie("session_token", token)
 
     return resp
