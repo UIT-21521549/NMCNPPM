@@ -69,8 +69,7 @@ class User:
         if user is None:
             return None
 
-        # username, password, access = user
-        access = "dfdsds"
+        username, password, access = user
 
         payload = {
             "username": username,
