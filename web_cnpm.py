@@ -9,7 +9,7 @@ def login():
 
 @app.route('/login', methods=['GET','POST'])
 def login_check():
-    user = User(request.form.get('username'), request.form.get('password'))
+    user = User(request.form.get('account'), request.form.get('password'))
     action = request.form.get('action')
     action2 = request.form.get('01')
     if action == 'Đăng nhập':
@@ -17,8 +17,6 @@ def login_check():
             return redirect('/home')
         else:
             return render_template('index.html')
-    elif  action == "Đăng ký" and action2 is None:
-        return redirect('/register')
     return render_template('index.html')
 
 @app.route('/register', methods=['GET','POST'])

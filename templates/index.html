@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="vie">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Login</title>
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{{ url_for('static',filename='style.css') }}"
-    />
-    </head>
-    <body>
-        <div class="login">
-            <form action="/login" method="POST">
-                <h2 class = 'Dang_nhap'> Đăng nhập</h2>
-                <label for="username">Tài khoản</label>
-                <input type="text" id="username" name="username">
-                <label for="password">Mật khẩu</label>
-                <input type="password" id="password" name="password">
-                <div class="button">
-                    <input type="submit" value="Đăng nhập"  name="action"/>
-                    <input type="submit" value="Đăng ký" name="action" id="01">
-                </div>
-            </form>
-        </div>
-    </body>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Login</title>
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href="{{ url_for('static',filename='style.css') }}"
+        />
+        </head>
+<body>
+    <img src="\Library_Brown.png" alt="" width="400">
+
+    <div class="container">
+        <h1>Login</h1>
+        <form action="login" method="post">
+            <label for="account">Tài khoản</label>
+            <input type="account" id="account" name="account" required>
+            <label for="password">Mật khẩu</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Log In">
+        </form>
+        <p><a href="register">Create a new account</a></p>
+    </div>
+</body>
 </html>
