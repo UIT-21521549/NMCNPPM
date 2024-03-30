@@ -4,13 +4,15 @@ body {
 
 }
 .container {
+  position: absolute;
+  top: 20%;
+  left: 70%;
   width: 300px;
   margin: 0 auto;
-  margin-top: 100px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  box-shadow: 0px 0px 5px #ccc;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1); /* Viền mờ */
   background: White;
 }
 label {
@@ -56,20 +58,32 @@ a {
 
 
 .register {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 350px;
   margin: 0 auto;
-  margin-top: 100px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0px 0px 5px #ccc;
-  background: White;
+  background: white;
+  display: none;
+  z-index: 1;
 }
 
+.name{
+  display: flex;
+  flex: 50%;
+}
 .disclaimer {
       font-size: 10px;
       margin-top: 10px;
       padding-right:10px;
     }
 
+.blur {
+    filter: blur(3px); /* Apply blur effect to the login form */
+}
 

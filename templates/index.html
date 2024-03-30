@@ -1,28 +1,60 @@
 <!DOCTYPE html>
 <html lang="vie">
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>Login</title>
-        <link
-          rel="stylesheet"
-          type="text/css"
-          href="{{ url_for('static',filename='style.css') }}"
-        />
-        </head>
+<head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        img {
+            display: block;
+            width: 1500px;
+            height: 700px;
+        }
+        </style>
+</head>
 <body>
-
+<div class="container_">
+    <img src="\static\background.png" alt="Mô tả hình ảnh">
     <div class="container">
-        <h1 >Đăng Nhập</h1>
-        <form action="Đăng Nhập" method="post">
-
-            <input type="account" id="account" name="account" placeholder ="Tài khoản" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tài khoản'" required>
-
+        
+        <h1>Đăng Nhập</h1>
+        <form action="/login" method="post">
+            <input type="account" id="account" name="account" placeholder="Tài khoản" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tài khoản'" required>
             <input type="password" id="password" name="password" placeholder="Mật Khẩu" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Mật Khẩu'" required>
-            
-            <input type="submit" value="Log In">
+            <input type="submit" value="Đăng Nhập">
         </form>
-        <p><a href="register">Create a new account</a></p>
+        <p><a href="#" id="registerLink">Create a new account</a></p>
     </div>
+</div>
+<div class="register" style="display: none;">
+    <form action="/register" method="post">
+        <h1 class='Dang_nhap'> Đăng Ký</h1>
+        <div class="name">
+            <input type="Fist_name" id="First_name" name="username" placeholder="Họ" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Họ'" style="margin-right:10px;" required>
+            <input type="Last_name" id="Last_name" name="username" placeholder="Tên" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tên'" required>
+        </div>
+        <input type="account" id="account" name="account" placeholder="Tài khoản" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tài khoản'" required >
+        <input type="password" id="password" name="password" placeholder="Mật khẩu" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Mật khẩu'" required>
+        <input type="your_number" id="number" name="number" placeholder="Số điện thoại hoặc email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Số điện thoại hoặc email'" required>
+        <div class="button">
+            <input type="submit" value="Đăng ký" name="Dang_ky" >
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById("registerLink").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent the default behavior of the link
+        document.querySelector(".container_").classList.add("blur"); // Blur the login form
+        document.querySelector(".register").style.display = "block"; // Show the registration form
+    });
+</script>
+
+
 </body>
 </html>

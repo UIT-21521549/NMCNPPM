@@ -10,13 +10,10 @@ def login():
 @app.route('/login', methods=['GET','POST'])
 def login_check():
     user = User(request.form.get('account'), request.form.get('password'))
-    action = request.form.get('action')
-    action2 = request.form.get('01')
-    if action == 'Đăng nhập':
-        if user.user_login() is not None:                                          
-            return redirect('/home')
-        else:
-            return render_template('index.html')
+    if user.user_login() is not None:                                          
+        return redirect('/home')
+    else:
+        return render_template('index.html')
     return render_template('index.html')
 
 @app.route('/register', methods=['GET','POST'])
