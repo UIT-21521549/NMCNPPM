@@ -2,7 +2,7 @@
 <html lang="vie">
   <head>
     <meta charset="UTF-8" />
-    <title>Login</title>
+    <title>Đăng Ký</title>
     <link
       rel="stylesheet"
       type="text/css"
@@ -13,23 +13,21 @@
     <body>
         <div class="register">
             <form action="/register" method="POST">
-                <h2 class = 'Dang_nhap'> Đăng Ký</h2>
+                <h1 class = 'Dang_nhap'> Đăng Ký</h1>
+                <div class = "name">
+                    <input type="Fist_name" id="First_name" name="username" placeholder ="Họ" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Họ'" style ="margin-right:10px;" required>
+                    <input type="Last_name" id="Last_name" name="username" placeholder ="Tên" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tên'" required>
+                </div>
+                
+                <input type="account" id="account" name="account" placeholder ="Tài khoản" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tài khoản'" required >
 
-                <label for="name">Họ và Tên: </label>
-                <input type="text" id="name" name="username">
+                <input type="password" id="password" name="password" placeholder ="Mật khẩu" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Mật khẩu'" required>
 
-                <label for="username">Tài khoản: </label>
-                <input type="text" id="username" name="username">
-
-                <label for="password">Mật khẩu: </label>
-                <input type="text" id="password" name="password">
-
-                <label for="number">Số điện thoại: </label>
-                <input type="text" id="number" name="number">
-                <label for="number">Gmail: </label>
-                <input type="password" id="password" name="password">
+                <input type="your_number" id="number" name="number" placeholder ="Số điện thoại hoặc email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Số điện thoại hoặc email'" required>
+                
+                 <div class="disclaimer">Khi bạn nhấn vào nút Đăng ký đồng nghĩa với việc bạn đã đồng ý với các điều khoảng ở thư viện UIT</div>
                 <div class="button">
-                    <input type="submit" value="Đăng ký" name="action-2" id ='02'>
+                    <input type="submit" value="Đăng ký" name="Dang_ky" >
                 </div>
             </form>
         </div>

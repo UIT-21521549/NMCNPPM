@@ -11,18 +11,30 @@ body {
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0px 0px 5px #ccc;
+  background: White;
 }
 label {
   display: block;
-  margin-top: 10px;
 }
 input[type="account"],
-input[type="password"] {
+input[type="password"],
+input[type="your_number"],
+input[type="Gmail"]{
   width: 90%;
   padding: 10px;
-  margin-top: 5px;
+  margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background: #e6e6e6;
+}
+input[type="Fist_name"],
+input[type="Last_name"]{
+  width: 40%;
+  padding: 10px;
+  
+  border: 1px solid #ccc;
+  border-radius: 5px;
+    background: #e6e6e6;
 }
 input[type="submit"] {
   width: 98%;
@@ -41,3 +53,23 @@ a {
   color: #4267B2;
   text-decoration: none;
 }
+
+
+.register {
+  width: 350px;
+  margin: 0 auto;
+  margin-top: 100px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #ccc;
+  background: White;
+}
+
+.disclaimer {
+      font-size: 10px;
+      margin-top: 10px;
+      padding-right:10px;
+    }
+
+

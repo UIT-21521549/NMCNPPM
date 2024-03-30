@@ -11,15 +11,15 @@
         />
         </head>
 <body>
-    <img src="\Library_Brown.png" alt="" width="400">
 
     <div class="container">
-        <h1>Login</h1>
-        <form action="login" method="post">
-            <label for="account">Tài khoản</label>
-            <input type="account" id="account" name="account" required>
-            <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password" required>
+        <h1 >Đăng Nhập</h1>
+        <form action="Đăng Nhập" method="post">
+
+            <input type="account" id="account" name="account" placeholder ="Tài khoản" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tài khoản'" required>
+
+            <input type="password" id="password" name="password" placeholder="Mật Khẩu" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Mật Khẩu'" required>
+            
             <input type="submit" value="Log In">
         </form>
         <p><a href="register">Create a new account</a></p>
