@@ -14,16 +14,14 @@ def login_check():
         return redirect('/home')
     else:
         return render_template('index.html')
-    return render_template('index.html')
 
-@app.route('/register', methods=['GET','POST'])
+@app.route('/register', methods=['POST'])
 def register():
-    user = User(request.form.get('username'), request.form.get('password'))
+    user = User(request.form.get('account_2'), request.form.get('password_2'))
     if request.method == 'GET':
         return render_template('register.html')
     if user.user_register() == True:
         return redirect('/login')
-    return render_template('register.html')
 
 @app.route('/home')
 def home():

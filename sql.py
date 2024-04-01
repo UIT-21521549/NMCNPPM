@@ -35,17 +35,15 @@ class User():
         server = 'LAPTOP-3011TS14'
         database = 'NMCNPM'
         connection_string = f'DRIVER=ODBC Driver 17 for SQL Server;SERVER={server};DATABASE={database};Trusted_Connection=yes'
-        #check value in text box
-        if self.acc == '' or self.pas == '':
-            return False
         # Establish connection to the database
         conn = pyodbc.connect(connection_string)
         cursor = conn.cursor()
 
         # Execute the query
         query = f"SELECT acc,pass,acess FROM login_user WHERE acc='{self.acc}'"
-        check = cursor.execute(query)
-        if check  == None:
+        check = list(cursor.execute(query))
+        print(check)
+        if check  is not None:
             return False
         # Fetch the result
         query = f"insert INTO login_user(acc,pass,acess) values ('{self.acc}', '{self.pas}', 'user')"

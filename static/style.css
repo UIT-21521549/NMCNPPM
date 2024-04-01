@@ -1,52 +1,53 @@
-body {
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   font-family: Arial, sans-serif;
   background-color: #FAF6F5;
-
 }
 .container {
   position: absolute;
-  top: 20%;
-  left: 70%;
-  width: 300px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1); /* Viền mờ */
-  background: White;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+  background: white;
 }
 label {
   display: block;
 }
-input[type="account"],
+input[type="text"],
 input[type="password"],
-input[type="your_number"],
-input[type="Gmail"]{
-  width: 90%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background: #e6e6e6;
-}
-input[type="Fist_name"],
-input[type="Last_name"]{
+input[type="your_number"] {
   width: 40%;
   padding: 10px;
-  
+  height: 30px;
+  margin-top: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
-    background: #e6e6e6;
+  border-radius: 20px;
+  background: #e6e6e6;
+}
+input[type="text"].small {
+  width: 40%;
 }
 input[type="submit"] {
-  width: 98%;
+  width: 43%;
   padding: 10px;
   margin-top: 20px;
   background-color: #4267B2;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
+}
+#registerLink{
+  width: 43%;
+  margin-left: 30px;
 }
 a {
   display: block;
@@ -55,11 +56,9 @@ a {
   color: #4267B2;
   text-decoration: none;
 }
-
-
 .register {
   position: absolute;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 350px;
@@ -72,18 +71,16 @@ a {
   display: none;
   z-index: 1;
 }
-
-.name{
+.name {
   display: flex;
-  flex: 50%;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
-.disclaimer {
-      font-size: 10px;
-      margin-top: 10px;
-      padding-right:10px;
-    }
-
-.blur {
-    filter: blur(3px); /* Apply blur effect to the login form */
+.input-with-image {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
-
+.input-with-image img {
+  margin-right: 5px;
+}
