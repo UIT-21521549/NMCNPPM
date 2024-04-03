@@ -1,9 +1,5 @@
-function checkAccountExistence() {
-    // Retrieve the value of the account input field
-    var account = document.getElementById("account_2").value;
-    
-    // Example condition: if the account already exists, print a message
-    if (account === "existing_account") {
-        console.log("Account already exists!");
-    }
+function registerLink(event){
+    event.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
+    document.querySelector(".container_").classList.add("blur"); // Làm mờ biểu mẫu đăng nhập
+    document.querySelector(".register").style.display = "block"; // Hiển thị biểu mẫu đăng ký
 }

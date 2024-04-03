@@ -4,24 +4,32 @@ from sql import *
 app = Flask(__name__)
 
 @app.route('/')
-def login():
+def init():
     return render_template('index.html')
-
-@app.route('/login', methods=['GET','POST'])
-def login_check():
-    user = User(request.form.get('account'), request.form.get('password'))
-    if user.user_login() is not None:                                          
-        return redirect('/home')
-    else:
-        return render_template('index.html')
+    
+@app.route('/login', methods=['POST'])
+def login():
+    acc = request.form.get('account')
+    pas = request.form.get('password')
+    check = User(acc,pas).user_login
+    if check is not None:
+        return redirect("/home")
+    return render_template('index.html') 
 
 @app.route('/register', methods=['POST'])
 def register():
-    user = User(request.form.get('account_2'), request.form.get('password_2'))
-    if request.method == 'GET':
-        return render_template('register.html')
-    if user.user_register() == True:
-        return redirect('/login')
+    first = request.form.get('First_name')
+    last = request.form.get('Last_name')
+    name = str(first) + " " + str(last)
+    acc = request.form.get('account_2')
+    pas = request.form.get('password_2')
+    email = request.form.get('number')
+    user = User(acc, pas,name, email)
+    check = user.user_register
+    print(check)
+    return render_template('index.html', check = check)
+    
+    
 
 @app.route('/home')
 def home():

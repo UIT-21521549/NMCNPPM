@@ -4,16 +4,9 @@
     <meta charset="UTF-8" />
     <title>Login</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}" />
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
-        </style>
 </head>
 <body>
+    <script src="static/script.js"></script>
     <div class="container_">
         <div class="container">
             <h1 style="margin-left: 75px;">Đăng Nhập</h1>
@@ -28,33 +21,40 @@
                 </div>
                 <input type="submit" value="Đăng Nhập" style="margin-left: 29px;">
             </form>
-            <p><a href="#" id="registerLink">Tạo tài khoản mới</a></p>
+            <a href="" id="registerLink" onclick="registerLink(event)">Tạo tài khoản mới</a>
         </div>
     </div>
     <div class="register" >
-        <form action="/register" method="post">
-            <h1 class='Dang_ky'> Đăng Ký</h1>
+        <form action="/register" method="Post">
+            <h1 class='Dang_ky'> Đăng Ký Tài Khoản</h1>
             <div class="name">
-                <input type="text" id="First_name" name="first_name" placeholder="Họ" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Họ'" required>
-                <input type="text" id="Last_name" name="last_name" placeholder="Tên" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tên'" required>
+                <input type="text" id="First_name" name="First_name" placeholder="Họ" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Họ'" required>
+                <input type="text" id="Last_name" name="Last_name" placeholder="Tên" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tên'" required>
             </div>
             <input type="text" id="account_2" name="account_2" placeholder="Tài khoản" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Tài khoản'" required>
-            <input type="password" id="password_2" name="password_2" placeholder="Mật khẩu" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Mật khẩu'" required>
+            <input type="text" id="password_2" name="password_2" placeholder="Mật khẩu" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Mật khẩu'" required>
             <input type="text" id="number" name="number" placeholder="Số điện thoại hoặc email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Số điện thoại hoặc email'" required>
             <div class="button">
-                <input type="submit" value="Đăng ký" name="Dang_ky" onclick="checkAccountExistence">
+                
+                <input type="submit" value="Đăng ký" name="Dang_ky">
             </div>
+            <div id="registrationMessage">
+                {% if check == "True" %}
+                    <script>
+                        alert("Tài khoản đã tồn tại!");
+                        console.log("Tài khoản đã tồn tại");
+                        document.querySelector(".container_").classList.add("blur"); // Làm mờ biểu mẫu đăng nhập
+                        document.querySelector(".register").style.display = "block"; // Hiển thị biểu mẫu đăng ký
+                    </script>
+                {% elif check == "False" %}
+                    <script>
+                        alert("Đăng ký thành công!");
+                        console.log("Đăng ký thành công!");
+                    </script>
+                {% endif %}
+            </div>
+            
         </form>
     </div>
-
-<script>
-    document.getElementById("registerLink").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent the default behavior of the link
-        document.querySelector(".container_").classList.add("blur"); // Blur the login form
-        document.querySelector(".register").style.display = "block"; // Show the registration form
-    });
-</script>
-
-
 </body>
 </html>
