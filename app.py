@@ -6,20 +6,36 @@ parser.add_argument("--config", type=str, default="./configs/example.env")
 args = parser.parse_args()
 
 # IMPORTANT: this need to be run before all other imports
-load_dotenv(args.config)
+if args.config != 0:
+    load_dotenv(args.config)
 # only import other class after this
 
 from flask import Flask, request, render_template, redirect, make_response
-from src.database import user
+
+
+from src.database import USER, Session
 
 
 app = Flask(__name__)
 
+reader_type_id = USER.create_reader_type(
+    reader_type="abcas"
+)
+
+print(reader_type_id)
+user_id = USER.create_user(
+    email="abc",
+    password="fkdjfd",
+    reader_type_id=reader_type_id
+)
+
+print(USER.verify_user(email="abc", password="fkdjfd"))
 
 # TODO: redo the routings
 
 @app.route("/")
 def login():
+    print(USER.verify_user(email="abc", password="fkdjfd"))
     return render_template("index.html")
 
 
@@ -74,6 +90,14 @@ def home():
     # return response for /home page
     pass
 
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    ''' Enable Flask to automatically remove database sessions at the
+    end of the request or when the application shuts down.
+    Ref: https://flask.palletsprojects.com/en/2.3.x/patterns/sqlalchemy/
+    '''
+    Session.remove()
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,95 +1,182 @@
-from sqlalchemy import select
+from sqlalchemy import select, insert, null
 import jwt
 import os
 from datetime import datetime, timezone, timedelta
+from hashlib import sha256
+
+from .models import user_table, reader_type_table
+from .connection import Session
 
 
-class User:
-    def __init__(self, db_engine):
-        self.db_engine = db_engine
+def create_user(
+    email,
+    password,
+    reader_type_id=null(),
+    user_name=null(),
+    birthday=null(),
+    address=null(),
+    is_admin=False,
+    Session=Session,
+):
+    assert isinstance(email, str)
+    assert isinstance(password, str)
 
-    def verify(self, username, password):
-        """check if username and password pair is corrected"""
-        if username is None or password is None:
-            return None
+    # TODO: check birthday and validate input
 
-        # TODO: sanitize user input
-        query = f"SELECT acc,pass,acess FROM login_user WHERE acc='{username}' AND password='{password}'"
+    password_hash = sha256(str(password).encode("utf-8")).hexdigest()
 
-        with self.db_engine.connect() as conn:
-            result = conn.execute(query)
+    stmt = insert(user_table).values(
+        reader_type_id=reader_type_id,
+        email=email,
+        password_hash=password_hash,
+        user_name=user_name,
+        birthday=birthday,
+        address=address,
+        is_admin=is_admin,
+    )
+    try:
+        with Session() as session:
+            result = session.execute(stmt)
+            session.commit()
+    except:
+        # Todo: return error message
+        return None
 
-        if len(result) == 0:
-            return None
+    # return user_id
+    return result.inserted_primary_key[0]
 
-        # assume username and password pair is unique
 
-        username, password, access = result[0]
+def get_users(user_ids=None, Session=Session):
+    # return all if user_ids is None
+    stmt = select(
+        user_table.c[
+            "user_id",
+            "reader_type_id",
+            "email",
+            "birthday",
+            "address",
+            "user_name",
+            "is_admin",
+        ],
+        reader_type_table.c.reader_type,
+    ).join(reader_type_table, isouter=True)
 
-        return username, password, access
+    if user_ids is not None:
+        stmt = stmt.where(user_table.c.user_id.in_(user_ids))
 
-    def check_username(self, username):
-        if username is None:
-            return False
+    try:
+        with Session() as session:
+            result = session.execute(stmt)
+    except:
+        # Todo: return error message
+        return None
 
-        # TODO: sanitize user input
-        query = f"SELECT acc FROM login_user WHERE acc='{username}'"
+    if result is None:
+        return None
 
-        with self.db_engine.connect() as conn:
-            result = conn.execute(query)
+    return [i._asdict() for i in result]
 
-        if len(result) == 0:
-            return False
 
-        return True
+def create_reader_type(reader_type, Session=Session):
+    assert isinstance(reader_type, str)
 
-    def register(self, username, password):
+    stmt = insert(reader_type_table).values(reader_type=reader_type)
 
-        already_existed = self.check_username(username)
+    try:
+        with Session() as session:
+            result = session.execute(stmt)
+            session.commit()
+    except:
+        # Todo: return error message
+        return None
 
-        if already_existed:
-            return False
+    if result is None:
+        return None
 
-        # TODO: sanitize user input and only store password hash
-        query = f"insert INTO login_user(acc,pass,acess) values ('{username}', '{password}', 'user')"
+    # return reader_type_id
+    return result.inserted_primary_key[0]
 
-        with self.db_engine.connect() as conn:
-            conn.execute(query)
-            # TODO: check if success
-            conn.commit()
 
-        return True
+def get_reader_type(reader_type_id=None, Session=Session):
+    # return all if reader_type_id is None
 
-    def get_jwt_token(self, username, password):
+    stmt = select(reader_type_table)
 
-        jwt_secret = os.getenv("jwt_secret")
-        assert jwt_secret is not None
+    if reader_type_id is not None:
+        stmt = stmt.where(reader_type_table.c.reader_type_id == reader_type_id)
 
-        user = self.verify(username, password)
-        if user is None:
-            return None
+    try:
+        with Session() as session:
+            result = session.execute(stmt)
+    except:
+        # Todo: return error message
+        return None
 
-        username, password, access = user
+    if result is None:
+        return None
 
-        payload = {
-            "username": username,
-            "access": access,
-            # hết hạng sau 1 ngày
-            "exp": datetime.now(tz=timezone.utc) + timedelta(days=1),
-        }
+    return [i._asdict() for i in result]
 
-        token = jwt.encode(payload, jwt_secret, algorithm="HS256")
 
-        return token
+# login with email and password
+def verify_user(email, password, Session=Session):
+    assert isinstance(email, str)
+    assert isinstance(password, str)
 
-    def verify_jwt_token(self, token):
-        jwt_secret = os.getenv("jwt_secret")
-        assert jwt_secret is not None
+    password_hash = sha256(str(password).encode("utf-8")).hexdigest()
 
-        try:
-            payload = jwt.decode(token, jwt_secret, algorithms=["HS256"])
-        except e:
-            print(e)
-            return False, None
+    stmt = (
+        select(user_table)
+        .where(user_table.c.email == email)
+        .where(user_table.c.password_hash == password_hash)
+    )
 
-        return True, payload["username"], payload["access"]
+    try:
+        with Session() as session:
+            result = session.execute(stmt).first()._asdict()
+
+    except:
+        # Todo: return error message
+        return None
+
+    return result
+
+
+def create_jwt_token(email, password, Session=Session):
+    jwt_secret = os.getenv("jwt_secret")
+    assert jwt_secret is not None
+
+    user = verify_user(email, password, Session=Session)
+
+    if user is None:
+        return None
+
+    payload = {
+        "user_id": user["user_id"],
+        "is_admin": user["is_admin"],
+        # hết hạng sau 2 ngày
+        "exp": datetime.now(tz=timezone.utc) + timedelta(days=2),
+    }
+
+    token = jwt.encode(payload, jwt_secret, algorithm="HS256")
+
+    return token
+
+
+def verify_jwt_token(token):
+    jwt_secret = os.getenv("jwt_secret")
+    assert jwt_secret is not None
+
+    try:
+        payload = jwt.decode(token, jwt_secret, algorithms=["HS256"])
+    except:
+        return None
+
+    user_id = payload["user_id"]
+
+    return {
+        "user_id": payload["user_id"],
+        "is_admin": payload["is_admin"],
+    }
+
+    return user_id

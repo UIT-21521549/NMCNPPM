@@ -2,3 +2,4 @@ SQLAlchemy
 pyodbc
 PyJWT
 Flask
+python-dotenv

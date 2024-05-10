@@ -1,12 +1,7 @@
-import os
-from sqlalchemy import create_engine
-from sqlalchemy.engine import URL
+from .connection import Session, create_new
+import src.database.user as USER
+import src.database.book as BOOK
+from .set_up_db import set_up
 
-from src.database.user import User
-
-# TODO: use sqlalchemy.engine.URL
-connection_string=os.getenv("db_connection_string")
-
-db_engine = create_engine(connection_string)
-
-user = User(db_engine)
+if create_new:
+    set_up()
