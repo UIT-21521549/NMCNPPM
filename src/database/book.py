@@ -139,22 +139,43 @@ def create_book_title(book_name, genre_id, Session=Session):
 def get_book_title(book_title_id=None, Session=Session):
     # return all if book_title_id is None
 
-    stmt = select(book_title_table, book_genre_table.c.genre_name).join(
-        book_genre_table
+    stmt = (
+        select(book_title_table, book_genre_table.c.genre_name, author_table)
+        .join(book_genre_table)
+        .join(book_author_list)
+        .join(author_table)
     )
-
     if book_title_id is not None:
         stmt = stmt.where(book_title_table.c.book_title_id == book_title_id)
 
     try:
         with Session() as session:
-            result = session.execute(stmt).all()
+            rows = session.execute(stmt).all()
     except:
         # Todo: return error message
         return None
 
-    # [(book_title_id, book_name, genre_id)]
-    return [i._asdict() for i in result]
+    rows = [i._asdict() for i in rows]
+
+    bt_id = list(set([i["book_title_id"] for i in rows]))
+
+    result = []
+    for idx in bt_id:
+        items = [i for i in rows if i["book_title_id"] == idx]
+
+        result.append(
+            {
+                "book_title_id": idx,
+                "genre_id": items[0]["genre_id"],
+                "book_name": items[0]["book_name"],
+                "genre_name": items[0]["genre_name"],
+                "authors": [
+                    {"author_id": i["author_id"], "author_name": i["author_name"]}
+                    for i in items
+                ],
+            }
+        )
+    return result
 
 
 def add_authors_to_book(book_title_id, author_ids, Session=Session):
@@ -194,17 +215,20 @@ def create_book(book_title_id, publication_year, publisher_id, price, Session=Se
     return result.inserted_primary_key[0]
 
 
-def get_book(book_id=None, Session=Session):
+def get_book(book_ids=None, Session=Session):
     # return all if book_title_id is None
 
     stmt = (
-        select(book_table, book_title_table)
-        .join(book_title_table)
+        select(
+            book_table,
+            publisher_table.c.publisher_name,
+        )
+        .select_from(book_table)
         .join(publisher_table)
     )
 
-    if book_id is not None:
-        stmt = stmt.filter(book_table.c.book_id.in_(book_id))
+    if book_ids is not None:
+        stmt = stmt.filter(book_table.c.book_id.in_(book_ids))
 
     try:
         with Session() as session:
@@ -217,7 +241,6 @@ def get_book(book_id=None, Session=Session):
 
 
 def add_book_to_receipt(book_receipt_id, book_ids, quantities, Session=Session):
-
     try:
         with Session() as session:
             result = session.execute(
@@ -279,9 +302,28 @@ def get_book_receipt(book_receipt_id=None, Session=Session):
 
     try:
         with Session() as session:
-            result = session.execute(stmt).all()
+            rows = session.execute(stmt).all()
     except:
         # Todo: return error message
         return None
 
-    return [i._asdict() for i in result]
+    rows = [i._asdict() for i in rows]
+
+    bt_id = list(set([i["book_receipt_id"] for i in rows]))
+
+    result = []
+    for idx in bt_id:
+        items = [i for i in rows if i["book_receipt_id"] == idx]
+
+        result.append(
+            {
+                "book_receipt_id": idx,
+                "entry_date": items[0]["entry_date"],
+
+                "items": [
+                    {"book_id": i["book_id"], "quantity": i["quantity"]}
+                    for i in items
+                ],
+            }
+        )
+    return result
