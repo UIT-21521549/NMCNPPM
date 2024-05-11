@@ -31,6 +31,5 @@ create_new = not sqlalchemy.inspect(db_engine).has_table("user")
 if create_new:
     metadata_obj.create_all(db_engine, checkfirst=False)
 
-
 session_factory = sessionmaker(db_engine)
 Session = scoped_session(session_factory)
