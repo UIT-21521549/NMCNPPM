@@ -43,3 +43,17 @@ def create():
         "author_id": idx 
     }
 
+@author_api.route("/add_to_book_title", methods=["POST"])
+def add_to_book():
+    data = request.get_json(force=True)
+
+    for k in ["book_title_id", "author_ids"]:
+        if k not in data.keys():
+            return f"{k} needed", 400
+
+    re = BOOK.add_authors_to_book(book_title_id=data["book_title_id"], author_ids=data["author_ids"])
+
+    if re:
+        return "done!"
+    else:
+        return "errors", 400

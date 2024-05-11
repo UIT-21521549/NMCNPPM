@@ -44,9 +44,6 @@ def get_genre(genre_id=None, Session=Session):
         # Todo: return error message
         return None
 
-    if len(result) == 0:
-        return None
-
     # [(genre_id, genre_name)]
     return [i._asdict() for i in result]
 
@@ -83,8 +80,7 @@ def get_author(author_id=None, Session=Session):
         # Todo: return error message
         return None
 
-    if len(result) == 0:
-        return None
+
 
     # [(author_id, author_name)]
     return [i._asdict() for i in result]
@@ -122,8 +118,7 @@ def get_publisher(publisher_id=None, Session=Session):
         # Todo: return error message
         return None
 
-    if len(result) == 0:
-        return None
+
 
     # [(publisher_id, publisher_name)]
     return [i._asdict() for i in result]
@@ -148,7 +143,7 @@ def create_book_title(book_name, genre_id, Session=Session):
 def get_book_title(book_title_id=None, Session=Session):
     # return all if book_title_id is None
 
-    stmt = select(book_title_table)
+    stmt = select(book_title_table, book_genre_table.c.genre_name).join(book_genre_table)
 
     if book_title_id is not None:
         stmt = stmt.where(book_title_table.c.book_title_id == book_title_id)
@@ -160,8 +155,7 @@ def get_book_title(book_title_id=None, Session=Session):
         # Todo: return error message
         return None
 
-    if len(result) == 0:
-        return None
+
 
     # [(book_title_id, book_name, genre_id)]
     return [i._asdict() for i in result]
@@ -207,7 +201,7 @@ def create_book(book_title_id, publication_year, publisher_id, price, Session=Se
 def get_book(book_id=None, Session=Session):
     # return all if book_title_id is None
 
-    stmt = select(book_table, book_title_table).join(book_title_table)
+    stmt = select(book_table, book_title_table).join(book_title_table).join(publisher_table)
 
     if book_id is not None:
         stmt = stmt.filter(book_table.c.book_id.in_(book_id))
@@ -219,8 +213,7 @@ def get_book(book_id=None, Session=Session):
         # Todo: return error message
         return None
 
-    if len(result) == 0:
-        return None
+
 
     return [i._asdict() for i in result]
 
@@ -293,7 +286,6 @@ def get_book_receipt(book_receipt_id=None, Session=Session):
         # Todo: return error message
         return None
 
-    if len(result) == 0:
-        return None
+
 
     return [i._asdict() for i in result]
