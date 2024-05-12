@@ -77,7 +77,11 @@ def get_current():
     token = request.cookies.get("session_token")
 
     if token is None:
-        data = request.get_json(force=True)
+        try:
+            data = request.get_json(force=True)
+        except:
+            return "session_token needed", 400
+            
         if "session_token" not in data.keys():
             return "session_token needed", 400
 

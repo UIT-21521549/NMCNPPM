@@ -14,14 +14,21 @@ def get_login_page():
 
 @login_page.route("", methods=["POST"])
 def get_token():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    reader_type_id=request.form.get('reader_type_id')
-    
+    data = request.get_json(force=True)
 
+    for k in ["email", "password"]:
+        if k not in data.keys():
+            return f"{k} needed", 400
+        if len(data[k]) == 0:
+            return f"{k} needed", 400
+
+    email = data.get('email')
+    password = request.form.get('password')
+    # reader_type_id=request.form.get('reader_type_id')
+    
     token = USER.create_jwt_token(
-        email=email,
-        password=password
+        email=data["email"],
+        password=data["password"]
     )
 
     resp = make_response()
