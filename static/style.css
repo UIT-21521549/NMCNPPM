@@ -1,63 +1,180 @@
-body {
-    font-family: Arial, sans-serif;
-  }
-  .login {
-    position: absolute;
-    border: 2px solid #F5F5F5;
-    width: 30%;
-    height: 500px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ với màu đen và độ trong suốt 0.1 */
-  }
-  .register {
-    position: absolute;
-    border: 2px solid #F5F5F5;
-    width: 30%;
-    height: 500px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ với màu đen và độ trong suốt 0.1 */
-  }
-  h2.Dang_nhap {
-    text-align: center;
-    font-size: 40px;
-  }
-  
-  form {
-    width: 60%;
-    margin: 0 auto;
-  }
-  label {
-    display: block;
-    margin-top: 10px;
-  }
-  input[type="text"], input[type="password"] {
-    width: 92%;
-    height: 40px;
-    padding: 5px;
-    margin-top: 5px;
-  }
-  input[type="submit"] {
-    width: 40%;
-    padding: 5px;
-    margin-top: 15px;
-    background-color: #DCDCDC;
-    color: black;
-    border: none;
-    cursor: pointer;
-  }
-  #dangky {
-    width: 40%;
-    padding: 5px;
-    margin-top: 15px;
-    background-color: #DCDCDC;
-    color: black;
-    border: none;
-    cursor: pointer;
-  }
-  #dangky{
-    margin-left: 10px;
-  }
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background-color: #FAF6F5;
+}
+
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+label {
+  display: block;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="your_number"] {
+  width: 100%;
+  padding: 10px;
+  height: 30px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background: #e6e6e6;
+}
+
+input[type="text"].small {
+  width: 40%;
+}
+
+input[type="submit"] {
+  width: 90%;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #4267B2;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#registerLink{
+  width: 43%;
+  margin-left: 100px;
+}
+
+a {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  color: #4267B2;
+  text-decoration: none;
+}
+
+.register {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #ccc;
+  background: white;
+  display: none;
+  z-index: 1;
+}
+
+.name {
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-with-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-image img {
+  margin-right: 5px;
+}
+
+#Last_name{
+  margin-left: 5px;
+}
+/* Input fields */
+#First_name,
+#account_2,
+#password_2,
+#number,
+#Last_name {
+  width: calc(100% - 22px);
+  padding: 10px;
+  margin-bottom: 15px;
+  height: 40px;
+  border: none;
+  border-radius: 20px;
+  background-color: #f2f2f2;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  color: #333;
+}
+
+/* Input labels */
+label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+/* Button */
+.button input[type="submit"] {
+  width: 100%;
+  padding: 15px;
+  background-color: #4267B2;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+.button input[type="submit"]:hover {
+  background-color: #34538f;
+}
+
+/* Form container */
+.register {
+  width: 350px;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+/* Heading */
+.Dang_ky {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Name fields */
+.name {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Link */
+a {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color: #4267B2;
+  text-decoration: none;
+}
+
+/* Link hover effect */
+a:hover {
+  text-decoration: underline;
+}
