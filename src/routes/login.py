@@ -34,7 +34,7 @@ def get_token():
     resp = make_response()
 
     if token == None:
-        return resp
+        return "authentication failed", 400
 
     resp.set_cookie("session_token", token)
 
