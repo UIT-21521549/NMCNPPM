@@ -87,12 +87,19 @@ def get_current():
 
         token = data["session_token"]
     
-    info = USER.verify_jwt_token(token)
+    payload = USER.verify_jwt_token(token)
 
-    if info is None:
+    if payload is None:
         return "token expired!", 400
+
+    user_id = payload["user_id"]
+
+    info = USER.get_users([user_id])
+
+    if info is None or len(info) == 0:
+        return "user not found", 400
     
-    return info
+    return info[0]
         
 
     
