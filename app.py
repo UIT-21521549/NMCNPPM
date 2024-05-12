@@ -11,12 +11,15 @@ if args.config != 0:
 # only import other class after this
 
 from flask import Flask, request, render_template, redirect, make_response
+from flask_cors import CORS
 
 
 from src.database import USER, Session
 from src.api import api
 from src.routes import routes
+
 app = Flask(__name__)
+CORS(app)
 
 app.register_blueprint(api)
 app.register_blueprint(routes)

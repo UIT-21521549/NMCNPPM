@@ -8,5 +8,5 @@ index_page = Blueprint("index", __name__, url_prefix="/")
 @index_page.route("/", methods=["GET"])
 def get_index_page():
     
-    # return login page here
+    # return index page here
     return render_template('index.html')
