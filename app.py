@@ -15,10 +15,11 @@ from flask import Flask, request, render_template, redirect, make_response
 
 from src.database import USER, Session
 from src.api import api
-
+from src.routes import routes
 app = Flask(__name__)
 
 app.register_blueprint(api)
+app.register_blueprint(routes)
 
 
 @app.teardown_appcontext
