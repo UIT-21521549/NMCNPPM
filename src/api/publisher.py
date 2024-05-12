@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import request
-
+from flask import g
+from src.helpers.auth import auth_decorator
 from src.database import BOOK
 
 publisher_api = Blueprint("publisher", __name__, url_prefix="/publisher")
@@ -28,6 +29,7 @@ def get_all():
     return result
 
 @publisher_api.route("/create", methods=["POST"])
+@auth_decorator(admin_only=True)
 def create():
     data = request.get_json(force=True)
 

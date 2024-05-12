@@ -1,6 +1,9 @@
 from flask import Blueprint
 from flask import request
 
+from flask import g
+from src.helpers.auth import auth_decorator
+
 from src.database import USER
 
 reader_type_api = Blueprint("reader_type", __name__, url_prefix="/reader_type")
@@ -28,6 +31,7 @@ def get_all():
     return rd
 
 @reader_type_api.route("/create", methods=["POST"])
+@auth_decorator(admin_only=True)
 def create_reader_type():
     data = request.get_json(force=True)
 

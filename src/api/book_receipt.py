@@ -1,6 +1,9 @@
 from flask import Blueprint
 from flask import request
 
+from flask import g
+from src.helpers.auth import auth_decorator
+
 from src.database import BOOK
 
 book_receipt_api = Blueprint("book_receipt", __name__, url_prefix="/book_receipt")
@@ -31,6 +34,7 @@ def get_all():
 
 
 @book_receipt_api.route("/create", methods=["POST"])
+@auth_decorator(admin_only=True)
 def create():
     data = request.get_json(force=True)
 

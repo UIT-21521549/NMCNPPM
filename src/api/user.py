@@ -2,6 +2,8 @@ from flask import Blueprint
 from flask import request
 from flask import jsonify
 
+from flask import g
+from src.helpers.auth import auth_decorator
 
 from src.database import USER
 
@@ -73,27 +75,11 @@ def get_token():
 
 
 @user_api.route("/get_by_token", methods=["GET"])
+@auth_decorator()
 def get_current():
-    token = request.cookies.get("session_token")
-
-    if token is None:
-        try:
-            data = request.get_json(force=True)
-        except:
-            return "session_token needed", 400
-            
-        if "session_token" not in data.keys():
-            return "session_token needed", 400
-
-        token = data["session_token"]
+    user_id = g.user_id
+    is_admin = g.is_admin
     
-    payload = USER.verify_jwt_token(token)
-
-    if payload is None:
-        return "token expired!", 400
-
-    user_id = payload["user_id"]
-
     info = USER.get_users([user_id])
 
     if info is None or len(info) == 0:
