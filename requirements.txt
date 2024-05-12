@@ -4,3 +4,4 @@ PyJWT
 Flask
 python-dotenv
 flask-cors
+pillow

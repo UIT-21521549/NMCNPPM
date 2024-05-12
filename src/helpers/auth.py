@@ -15,18 +15,21 @@ def auth_decorator(admin_only=False):
             if token is None:
                 try:
                     data = request.get_json(force=True)
+
+                    assert "session_token" in data.keys()
                 except:
                     return "session_token needed", 400
-                
-                if "session_token" not in data.keys():
-                    return "session_token needed", 400
+
                 
                 token = data["session_token"]
-
-            payload = USER.verify_jwt_token(token)
+            
+            try:
+                payload = USER.verify_jwt_token(token)
+            except:
+                return "token expired!", 403
 
             if admin_only and not payload["is_admin"]:
-                return "Forbidden access", 403
+                return "you can't be here", 403
 
             g.user_id = payload["user_id"]
             g.is_admin = payload["is_admin"]

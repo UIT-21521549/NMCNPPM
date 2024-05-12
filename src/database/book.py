@@ -1,5 +1,4 @@
 from sqlalchemy import select, insert, null
-from .connection import Session
 
 from .models import (
     book_title_table,
@@ -13,23 +12,17 @@ from .models import (
 )
 
 
-def create_genre(genre_name, Session=Session):
+def create_genre(genre_name, session=None):
     stmt = insert(book_genre_table).values(
         genre_name=genre_name,
     )
-    try:
-        with Session() as session:
-            result = session.execute(stmt)
-            session.commit()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt)
 
     # return genre_id
     return result.inserted_primary_key[0]
 
 
-def get_genre(genre_id=None, Session=Session):
+def get_genre(genre_id=None, session=None):
     # return all if genre_id is None
 
     stmt = select(book_genre_table)
@@ -37,71 +30,50 @@ def get_genre(genre_id=None, Session=Session):
     if genre_id is not None:
         stmt = stmt.where(book_genre_table.c.genre_id == genre_id)
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt).all()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt).all()
 
-    # [(genre_id, genre_name)]
+    assert len(result) != 0
+
     return [i._asdict() for i in result]
 
 
-def create_author(author_name, Session=Session):
+def create_author(author_name, session=None):
     stmt = insert(author_table).values(
         author_name=author_name,
     )
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt)
-            session.commit()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt)
 
     # return author_id
     return result.inserted_primary_key[0]
 
 
-def get_author(author_id=None, Session=Session):
+def get_author(author_id=None, session=None):
     # return all if author_id is None
-
     stmt = select(author_table)
 
     if author_id is not None:
         stmt = stmt.where(author_table.c.author_id == author_id)
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt).all()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt).all()
 
-    # [(author_id, author_name)]
+    assert len(result) != 0
+
     return [i._asdict() for i in result]
 
 
-def create_publisher(publisher_name, Session=Session):
+def create_publisher(publisher_name, session=None):
     stmt = insert(publisher_table).values(
         publisher_name=publisher_name,
     )
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt)
-            session.commit()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt)
 
     # return publisher_id
     return result.inserted_primary_key[0]
 
 
-def get_publisher(publisher_id=None, Session=Session):
+def get_publisher(publisher_id=None, session=None):
     # return all if publisher_id is None
 
     stmt = select(publisher_table)
@@ -109,34 +81,25 @@ def get_publisher(publisher_id=None, Session=Session):
     if publisher_id is not None:
         stmt = stmt.where(publisher_table.c.publisher_id == publisher_id)
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt).all()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt).all()
+
+    assert len(result) != 0
 
     # [(publisher_id, publisher_name)]
     return [i._asdict() for i in result]
 
 
-def create_book_title(book_name, genre_id, Session=Session):
+def create_book_title(book_name, genre_id, session=None):
 
     stmt = insert(book_title_table).values(book_name=book_name, genre_id=genre_id)
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt)
-            session.commit()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt)
 
     # return book_title_id
     return result.inserted_primary_key[0]
 
 
-def get_book_title(book_title_id=None, Session=Session):
+def get_book_title(book_title_id=None, session=None):
     # return all if book_title_id is None
 
     stmt = (
@@ -148,12 +111,9 @@ def get_book_title(book_title_id=None, Session=Session):
     if book_title_id is not None:
         stmt = stmt.where(book_title_table.c.book_title_id == book_title_id)
 
-    try:
-        with Session() as session:
-            rows = session.execute(stmt).all()
-    except:
-        # Todo: return error message
-        return None
+    rows = session.execute(stmt).all()
+
+    assert len(rows) != 0
 
     rows = [i._asdict() for i in rows]
 
@@ -169,6 +129,7 @@ def get_book_title(book_title_id=None, Session=Session):
                 "genre_id": items[0]["genre_id"],
                 "book_name": items[0]["book_name"],
                 "genre_name": items[0]["genre_name"],
+                "image_id": items[0]["image_id"],
                 "authors": [
                     {"author_id": i["author_id"], "author_name": i["author_name"]}
                     for i in items
@@ -178,23 +139,17 @@ def get_book_title(book_title_id=None, Session=Session):
     return result
 
 
-def add_authors_to_book(book_title_id, author_ids, Session=Session):
+def add_authors_to_book(book_title_id, author_ids, session=None):
 
-    try:
-        with Session() as session:
-            result = session.execute(
-                insert(book_author_list),
-                [{"book_title_id": book_title_id, "author_id": i} for i in author_ids],
-            )
-            session.commit()
-    except:
-        # Todo: return error message
-        return False
+    result = session.execute(
+        insert(book_author_list),
+        [{"book_title_id": book_title_id, "author_id": i} for i in author_ids],
+    )
 
     return True
 
 
-def create_book(book_title_id, publication_year, publisher_id, price, Session=Session):
+def create_book(book_title_id, publication_year, publisher_id, price, session=None):
 
     stmt = insert(book_table).values(
         book_title_id=book_title_id,
@@ -203,19 +158,13 @@ def create_book(book_title_id, publication_year, publisher_id, price, Session=Se
         price=price,
     )
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt)
-            session.commit()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt)
 
     # return book_id
     return result.inserted_primary_key[0]
 
 
-def get_book(book_ids=None, Session=Session):
+def get_book(book_ids=None, session=None):
     # return all if book_title_id is None
 
     stmt = (
@@ -230,68 +179,45 @@ def get_book(book_ids=None, Session=Session):
     if book_ids is not None:
         stmt = stmt.filter(book_table.c.book_id.in_(book_ids))
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt).all()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt).all()
+
+    assert len(result) != 0
 
     return [i._asdict() for i in result]
 
 
-def add_book_to_receipt(book_receipt_id, book_ids, quantities, Session=Session):
-    try:
-        with Session() as session:
-            result = session.execute(
-                insert(book_receipt_detail_table),
-                [
-                    {"book_receipt_id": book_receipt_id, "book_id": i, "quantity": q}
-                    for i, q in zip(book_ids, quantities)
-                ],
-            )
-            session.commit()
-    except:
-        # Todo: return error message
-        return False
+def add_book_to_receipt(book_receipt_id, book_ids, quantities, session=None):
 
-    return True
+    result = session.execute(
+        insert(book_receipt_detail_table),
+        [
+            {"book_receipt_id": book_receipt_id, "book_id": i, "quantity": q}
+            for i, q in zip(book_ids, quantities)
+        ],
+    )
 
 
-def create_book_receipt(book_ids=[], quantities=[], Session=Session):
+def create_book_receipt(book_ids=[], quantities=[], session=None):
     assert len(book_ids) == len(quantities)
 
     stmt = insert(book_receipt_table)
-    try:
-        with Session() as session:
-            book_receipt_id = session.execute(stmt).inserted_primary_key[0]
 
-            if book_receipt_id is None:
-                session.rollback()
-                return None
+    book_receipt_id = session.execute(stmt).inserted_primary_key[0]
 
-            if book_ids is not None and len(book_ids) > 0:
-                session.execute(
-                    insert(book_receipt_detail_table),
-                    [
-                        {
-                            "book_receipt_id": book_receipt_id,
-                            "book_id": i,
-                            "quantity": q,
-                        }
-                        for i, q in zip(book_ids, quantities)
-                    ],
-                )
-            session.commit()
-    except Exception as e:
-        print(e)
-        # Todo: return error message
-        return None
+    assert book_receipt_id is not None
+
+    if len(book_ids) > 0:
+        add_book_to_receipt(
+            book_receipt_id=book_receipt_id,
+            book_ids=book_ids,
+            quantities=quantities,
+            session=session,
+        )
 
     return book_receipt_id
 
 
-def get_book_receipt(book_receipt_id=None, Session=Session):
+def get_book_receipt(book_receipt_id=None, session=None):
     # return all if book_receipt_id is None
 
     stmt = select(
@@ -301,13 +227,10 @@ def get_book_receipt(book_receipt_id=None, Session=Session):
     if book_receipt_id is not None:
         stmt = stmt.where(book_receipt_table.c.book_receipt_id == book_receipt_id)
 
-    try:
-        with Session() as session:
-            rows = session.execute(stmt).all()
-    except:
-        # Todo: return error message
-        return None
+    rows = session.execute(stmt).all()
 
+    assert len(rows) != 0
+    
     rows = [i._asdict() for i in rows]
 
     bt_id = list(set([i["book_receipt_id"] for i in rows]))
@@ -320,10 +243,8 @@ def get_book_receipt(book_receipt_id=None, Session=Session):
             {
                 "book_receipt_id": idx,
                 "entry_date": items[0]["entry_date"],
-
                 "items": [
-                    {"book_id": i["book_id"], "quantity": i["quantity"]}
-                    for i in items
+                    {"book_id": i["book_id"], "quantity": i["quantity"]} for i in items
                 ],
             }
         )

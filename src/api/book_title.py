@@ -2,31 +2,38 @@ from flask import Blueprint
 from flask import request
 from flask import g
 from src.helpers.auth import auth_decorator
-from src.database import BOOK
+from src.database import BOOK, Session
 
 book_title_api = Blueprint("book_title", __name__, url_prefix="/book_title")
+
 
 @book_title_api.route("/get_one", methods=["GET"])
 def get_one():
     book_title_id = request.args.get("id")
+
     if book_title_id is None:
         return "id required", 400
-    
-    re = BOOK.get_book_title(book_title_id)
 
-    if re is None or len(re) == 0:
+    try:
+        with Session() as session:
+            re = BOOK.get_book_title(book_title_id, session=session)
+    except:
         return "book_title not found", 400
 
     return re[0]
 
+
 @book_title_api.route("/get_all", methods=["GET"])
 def get_all():
-    result = BOOK.get_book_title()
 
-    if result is None:
-        return "server error", 500
-    
+    try:
+        with Session() as session:
+            re = BOOK.get_book_title(session=session)
+    except:
+        return "book_title not found", 500
+
     return result
+
 
 @book_title_api.route("/create", methods=["POST"])
 @auth_decorator(admin_only=True)
@@ -37,11 +44,13 @@ def create():
         if k not in data.keys():
             return f"{k} needed", 400
 
-    idx = BOOK.create_book_title(book_name=data["book_name"], genre_id=data["genre_id"])
+    try:
+        with Session() as session:
+            idx = BOOK.create_book_title(
+                book_name=data["book_name"], genre_id=data["genre_id"], session=session
+            )
+            session.commit()
+    except:
+        return "create book_title fail", 400
 
-    if idx is None:
-        return "book_title already exists", 400
-    return {
-        "book_title_id": idx 
-    }
-
+    return {"book_title_id": idx}

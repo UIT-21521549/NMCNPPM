@@ -1,4 +1,4 @@
-from sqlalchemy import MetaData, UniqueConstraint
+from sqlalchemy import MetaData, UniqueConstraint, ForeignKeyConstraint
 from sqlalchemy import Table, Column, Integer, Boolean, String, ForeignKey, DateTime, Enum, Float
 import enum
 from sqlalchemy.sql import func
@@ -43,6 +43,8 @@ book_title_table = Table(
     Column("book_title_id", Integer, primary_key=True),
     Column("book_name", String(30), nullable=False),
     Column("genre_id", Integer, ForeignKey("book_genre.genre_id"), nullable=False),
+    Column("image_id", Integer, ForeignKey("image_path.image_id", ondelete='SET NULL', onupdate="CASCADE")),
+
 )
 
 # Thể loại Sách
@@ -193,4 +195,13 @@ parameter_table = Table(
     metadata_obj,
     Column("parameter_name", String, primary_key=True),
     Column("value", Integer),
+)
+
+image_table = Table(
+    "image_path",
+    metadata_obj,
+    Column("image_id", Integer, primary_key=True),
+    Column("image_file_name", String, nullable=False),
+    Column("file_path", String, nullable=False),
+    # ForeignKeyConstraint([])
 )

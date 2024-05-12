@@ -3,7 +3,7 @@ from flask import request
 from flask import g
 from src.helpers.auth import auth_decorator
 
-from src.database import BOOK
+from src.database import BOOK, Session
 
 genre_api = Blueprint("genre", __name__, url_prefix="/genre")
 
@@ -13,19 +13,21 @@ def get_one():
     if genre_id is None:
         return "id required", 400
     
-    rd = BOOK.get_genre(genre_id)
-
-    if rd is None or len(rd) == 0:
+    try:
+        with Session() as session:
+            rd = BOOK.get_genre(genre_id, session=session)
+    except:
         return "genre not found", 400
 
     return rd[0]
 
 @genre_api.route("/get_all", methods=["GET"])
 def get_all():
-    result = BOOK.get_genre()
-
-    if result is None:
-        return "server error", 500
+    try:
+        with Session() as session:
+            result = BOOK.get_genre(session=session)
+    except:
+        return "genre not found", 500
     
     return result
 
@@ -38,10 +40,13 @@ def create():
         if k not in data.keys():
             return f"{k} needed", 400
 
-    idx = BOOK.create_genre(genre_name=data["genre_name"])
-
-    if idx is None:
-        return "genre already exists", 400
+    try:
+        with Session() as session:
+            idx = BOOK.create_genre(genre_name=data["genre_name"], session=session)
+            session.commit()
+    except:
+        return "create genre fail", 400
+        
     return {
         "genre_id": idx 
     }

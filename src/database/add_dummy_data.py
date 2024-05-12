@@ -15,9 +15,13 @@ def random_suffix(length):
     return "".join(random.choice(letters) for i in range(length))
 
 
-def set_up():
+def set_up(session):
+
+    USER.create_user(
+        email="abc", password="abc", user_name="abc", session=session
+    )
     for rt in ["X", "Y"]:
-        USER.create_reader_type(reader_type=rt)
+        USER.create_reader_type(reader_type=rt, session=session)
 
     for i in range(4):
         USER.create_user(
@@ -25,23 +29,27 @@ def set_up():
             password=random_suffix(8),
             reader_type_id=random.randrange(1, 3),
             user_name=random_suffix(8),
+            session=session,
         )
 
     for i in range(10):
-        BOOK.create_genre(f"genre{random_suffix(3)}")
+        BOOK.create_genre(f"genre{random_suffix(4)}", session=session)
 
-        BOOK.create_author(f"author{random_suffix(3)}")
+        BOOK.create_author(f"author{random_suffix(4)}", session=session)
 
-        BOOK.create_publisher(f"publisher{random_suffix(3)}")
+        BOOK.create_publisher(f"publisher{random_suffix(4)}", session=session)
 
     for i in range(20):
         b_id = BOOK.create_book_title(
-            book_name=f"book_title{random_suffix(5)}", genre_id=random.randrange(1, 11)
+            book_name=f"book_title{random_suffix(4)}",
+            genre_id=random.randrange(1, 11),
+            session=session,
         )
 
         BOOK.add_authors_to_book(
             book_title_id=b_id,
             author_ids=random.sample(range(1, 11), random.randrange(1, 4)),
+            session=session,
         )
 
     for i in range(30):
@@ -50,6 +58,7 @@ def set_up():
             publication_year=random.randrange(1900, 2050),
             publisher_id=random.randrange(1, 11),
             price=random.randrange(10, 100),
+            session=session,
         )
 
     for i in range(15):
@@ -58,4 +67,5 @@ def set_up():
         BOOK.create_book_receipt(
             book_ids=random.sample(range(1, 31), no_b),
             quantities=[random.randrange(1, 20) for _ in range(no_b)],
+            session=session,
         )

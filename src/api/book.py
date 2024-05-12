@@ -3,7 +3,7 @@ from flask import request
 from flask import g
 from src.helpers.auth import auth_decorator
 
-from src.database import BOOK
+from src.database import BOOK, Session
 
 book_api = Blueprint("book", __name__, url_prefix="/book")
 
@@ -13,10 +13,10 @@ def get_one():
     book_id = request.args.get("id")
     if book_id is None:
         return "id required", 400
-
-    re = BOOK.get_book([book_id])
-
-    if re is None or len(re) == 0:
+    try:
+        with Session() as session:
+            re = BOOK.get_book([book_id], session=session)
+    except:
         return "book not found", 400
 
     return re[0]
@@ -24,10 +24,12 @@ def get_one():
 
 @book_api.route("/get_all", methods=["GET"])
 def get_all():
-    result = BOOK.get_book()
-
-    if result is None:
-        return "server error", 500
+    
+    try:
+        with Session() as session:
+            result = BOOK.get_book(session=session)
+    except:
+        return "book not found", 500
 
     return result
 
@@ -41,13 +43,17 @@ def create():
         if k not in data.keys():
             return f"{k} needed", 400
 
-    idx = BOOK.create_book(
-        book_title_id=data["book_title_id"],
-        publication_year=data["publication_year"],
-        publisher_id=data["publisher_id"],
-        price=data["price"],
-    )
+    try:
+        with Session() as session:
+            idx = BOOK.create_book(
+                book_title_id=data["book_title_id"],
+                publication_year=data["publication_year"],
+                publisher_id=data["publisher_id"],
+                price=data["price"],
+                session=session
+            )
+            session.commit()
+    except:
+        return "book creation failed", 400
 
-    if idx is None:
-        return "book already exists", 400
     return {"book_id": idx}

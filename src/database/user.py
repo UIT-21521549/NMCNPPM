@@ -16,7 +16,7 @@ def create_user(
     birthday=null(),
     address=null(),
     is_admin=False,
-    Session=Session,
+    session=None
 ):
     assert isinstance(email, str)
     assert isinstance(password, str)
@@ -34,19 +34,14 @@ def create_user(
         address=address,
         is_admin=is_admin,
     )
-    try:
-        with Session() as session:
-            result = session.execute(stmt)
-            session.commit()
-    except:
-        # Todo: return error message
-        return None
 
+    result = session.execute(stmt)
+    
     # return user_id
     return result.inserted_primary_key[0]
 
 
-def get_users(user_ids=None, Session=Session):
+def get_users(user_ids=None, session=None):
     # return all if user_ids is None
     stmt = select(
         user_table.c[
@@ -64,40 +59,25 @@ def get_users(user_ids=None, Session=Session):
     if user_ids is not None:
         stmt = stmt.where(user_table.c.user_id.in_(user_ids))
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt)
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt).all()
 
-    if result is None:
-        return None
+    assert len(result) != 0
 
     return [i._asdict() for i in result]
 
 
-def create_reader_type(reader_type, Session=Session):
+def create_reader_type(reader_type, session=None):
     assert isinstance(reader_type, str)
 
     stmt = insert(reader_type_table).values(reader_type=reader_type)
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt)
-            session.commit()
-    except:
-        # Todo: return error message
-        return None
-
-    if result is None:
-        return None
+    result = session.execute(stmt)
 
     # return reader_type_id
     return result.inserted_primary_key[0]
 
 
-def get_reader_type(reader_type_id=None, Session=Session):
+def get_reader_type(reader_type_id=None, session=None):
     # return all if reader_type_id is None
 
     stmt = select(reader_type_table)
@@ -105,21 +85,15 @@ def get_reader_type(reader_type_id=None, Session=Session):
     if reader_type_id is not None:
         stmt = stmt.where(reader_type_table.c.reader_type_id == reader_type_id)
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt).all()
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt).all()
     
-    if result is None:
-        return None
+    assert len(result) != 0
 
     return [i._asdict() for i in result]
 
 
 # login with email and password
-def verify_user(email, password, Session=Session):
+def verify_user(email, password, session=None):
     assert isinstance(email, str)
     assert isinstance(password, str)
 
@@ -131,25 +105,18 @@ def verify_user(email, password, Session=Session):
         .where(user_table.c.password_hash == password_hash)
     )
 
-    try:
-        with Session() as session:
-            result = session.execute(stmt).first()._asdict()
-
-    except:
-        # Todo: return error message
-        return None
+    result = session.execute(stmt).first()._asdict()
 
     return result
 
 
-def create_jwt_token(email, password, Session=Session):
+def create_jwt_token(email, password, session=None):
     jwt_secret = os.getenv("jwt_secret")
     assert jwt_secret is not None
 
-    user = verify_user(email, password, Session=Session)
+    user = verify_user(email, password, session=session)
 
-    if user is None:
-        return None
+    assert user is not None
 
     payload = {
         "user_id": user["user_id"],
@@ -170,10 +137,8 @@ def verify_jwt_token(token):
     jwt_secret = os.getenv("jwt_secret")
     assert jwt_secret is not None
 
-    try:
-        payload = jwt.decode(token, jwt_secret, algorithms=["HS256"])
-    except:
-        return None
+    # will raise error if token is invalid
+    payload = jwt.decode(token, jwt_secret, algorithms=["HS256"])
 
     return {
         "user_id": payload["user_id"],
