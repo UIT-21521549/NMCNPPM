@@ -160,7 +160,10 @@ def create_jwt_token(email, password, Session=Session):
 
     token = jwt.encode(payload, jwt_secret, algorithm="HS256")
 
-    return token
+    return {
+        "token": token,
+        "user_id": user["user_id"]
+    }
 
 
 def verify_jwt_token(token):

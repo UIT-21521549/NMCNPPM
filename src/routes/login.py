@@ -26,16 +26,17 @@ def get_token():
     password = request.form.get('password')
     # reader_type_id=request.form.get('reader_type_id')
     
-    token = USER.create_jwt_token(
+    result = USER.create_jwt_token(
         email=data["email"],
         password=data["password"]
     )
 
-    resp = make_response()
-
-    if token == None:
+    if result == None:
         return "authentication failed", 400
 
-    resp.set_cookie("session_token", token)
+    resp = make_response(result)
+
+
+    resp.set_cookie("session_token", result["token"])
 
     return resp
