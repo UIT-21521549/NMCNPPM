@@ -19,7 +19,7 @@ from src.api import api
 from src.routes import routes
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.register_blueprint(api)
 app.register_blueprint(routes)

@@ -16,6 +16,8 @@ def get_login_page():
 def get_token():
     email = request.form.get('email')
     password = request.form.get('password')
+    reader_type_id=request.form.get('reader_type_id')
+    
 
     token = USER.create_jwt_token(
         email=email,
