@@ -283,7 +283,8 @@ def create_book_receipt(book_ids=[], quantities=[], Session=Session):
                     ],
                 )
             session.commit()
-    except:
+    except Exception as e:
+        print(e)
         # Todo: return error message
         return None
 

@@ -26,7 +26,7 @@ def get_one():
 def get_all():
     users = USER.get_users()
 
-    if users is None or len(users) == 0:
+    if users is None:
         return "server error", 500
     
     return users
@@ -40,13 +40,56 @@ def create_user():
         if k not in data.keys():
             return f"{k} needed", 400
     
-    user_id = USER.create_user(
+    new_user_id = USER.create_user(
         email=data["email"], password=data["password"], reader_type_id=data["reader_type_id"]
     )
 
-    if user_id is None:
+    if new_user_id is None:
         return "user already exists", 400
 
     return {
-        "user_id": user_id 
+        "user_id": new_user_id 
     }
+
+@user_api.route("/get_auth_token", methods=["POST"])
+def get_token():
+    data = request.get_json(force=True)
+
+    for k in ["email", "password"]:
+        if k not in data.keys():
+            return f"{k} needed", 400
+    
+    token = USER.create_jwt_token(
+        email=data["email"],
+        password=data["password"]
+    )
+
+    if token is None:
+        return "authentication failed", 400
+
+    return {
+        "token": token
+    }
+
+
+@user_api.route("/get_by_token", methods=["GET"])
+def get_current():
+    token = request.cookies.get("session_token")
+
+    if token is None:
+        data = request.get_json(force=True)
+        if "session_token" not in data.keys():
+            return "session_token needed", 400
+
+        token = data["session_token"]
+    
+    info = USER.verify_jwt_token(token)
+
+    if info is None:
+        return "token expired!", 400
+    
+    return info
+        
+
+    
+

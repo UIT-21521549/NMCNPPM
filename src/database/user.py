@@ -107,11 +107,11 @@ def get_reader_type(reader_type_id=None, Session=Session):
 
     try:
         with Session() as session:
-            result = session.execute(stmt)
+            result = session.execute(stmt).all()
     except:
         # Todo: return error message
         return None
-
+    
     if result is None:
         return None
 
@@ -172,11 +172,7 @@ def verify_jwt_token(token):
     except:
         return None
 
-    user_id = payload["user_id"]
-
     return {
         "user_id": payload["user_id"],
         "is_admin": payload["is_admin"],
     }
-
-    return user_id

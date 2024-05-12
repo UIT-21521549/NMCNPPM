@@ -22,7 +22,7 @@ def get_reader_type():
 def get_all():
     rd = USER.get_reader_type()
 
-    if rd is None or len(rd) == 0:
+    if rd is None:
         return "server error", 500
     
     return rd
@@ -34,10 +34,12 @@ def create_reader_type():
     for k in ["reader_type"]:
         if k not in data.keys():
             return f"{k} needed", 400
+
     idx = USER.create_reader_type(reader_type=data["reader_type"])
 
     if idx is None:
         return "reader type already exists", 400
+        
     return {
         "reader_type_id": idx 
     }

@@ -24,7 +24,7 @@ def get_one():
 def get_all():
     result = BOOK.get_book_receipt()
 
-    if result is None or len(result) == 0:
+    if result is None:
         return "server error", 500
 
     return result
