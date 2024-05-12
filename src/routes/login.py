@@ -6,13 +6,13 @@ login_page = Blueprint("login", __name__, url_prefix="/login")
 
 
 
-@login_page.route("/", methods=["GET"])
+@login_page.route("", methods=["GET"])
 def get_login_page():
     
     # return login page here
     return render_template('index.html')
 
-@login_page.route("/", methods=["POST"])
+@login_page.route("", methods=["POST"])
 def get_token():
     email = request.form.get('email')
     password = request.form.get('password')
@@ -24,10 +24,11 @@ def get_token():
         password=password
     )
 
-    if token == None:
-        return redirect("/login")
+    resp = make_response()
 
-    resp = make_response(redirect("/"))
+    if token == None:
+        return resp
+
     resp.set_cookie("session_token", token)
 
     return resp
