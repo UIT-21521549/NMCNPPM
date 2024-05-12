@@ -21,13 +21,14 @@ def get_one():
         with Session() as session:
             re = IMAGE.get_image(image_id, session=session)
     except:
-        return "image not found", 400
+        return send_file(default_book_images, mimetype='image/gif'), 400
     
     img_path = re["file_path"]
 
     return send_file(img_path, mimetype='image/gif')
 
 @image_api.route("/delete", methods=["DELETE"])
+@auth_decorator(admin_only=True)
 def del_one():
     image_id = request.args.get("id")
 
@@ -45,6 +46,7 @@ def del_one():
     return "done"
 
 @image_api.route("/add_to_book_title", methods=["POST"])
+@auth_decorator(admin_only=True)
 def add_to_book():
     book_title_id = request.args.get("id")
 

@@ -203,5 +203,4 @@ image_table = Table(
     Column("image_id", Integer, primary_key=True),
     Column("image_file_name", String, nullable=False),
     Column("file_path", String, nullable=False),
-    # ForeignKeyConstraint([])
 )
