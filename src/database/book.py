@@ -200,7 +200,7 @@ def get_book_title_details(book_title_id, session=None):
     )
     result = session.execute(stmt).all()
 
-    book_title["available"] = [i._asdict() for i in result]
+    book_title["editions"] = [i._asdict() for i in result]
 
     return book_title
 
