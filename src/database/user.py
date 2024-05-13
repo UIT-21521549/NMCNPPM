@@ -23,6 +23,9 @@ def create_user(
 
     # TODO: check birthday and validate input
 
+    if birthday is not null():
+        birthday = datetime.strptime(birthday, "%d-%m-%Y").date()
+
     password_hash = sha256(str(password).encode("utf-8")).hexdigest()
 
     stmt = insert(user_table).values(

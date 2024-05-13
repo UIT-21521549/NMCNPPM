@@ -28,12 +28,26 @@ def get_all():
 
     try:
         with Session() as session:
-            re = BOOK.get_book_title(session=session)
+            result = BOOK.get_book_title(session=session)
     except:
         return "book_title not found", 500
 
     return result
 
+@book_title_api.route("/get_detail", methods=["GET"])
+def get_detail():
+    book_title_id = request.args.get("id")
+
+    if book_title_id is None:
+        return "id required", 400
+
+    try:
+        with Session() as session:
+            result = BOOK.get_book_title_details(book_title_id, session=session)
+    except Exception as e:
+        return "book_title not found", 500
+
+    return result
 
 @book_title_api.route("/create", methods=["POST"])
 @auth_decorator(admin_only=True)

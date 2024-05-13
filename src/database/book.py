@@ -186,6 +186,24 @@ def get_book(book_ids=None, session=None):
     return [i._asdict() for i in result]
 
 
+def get_book_title_details(book_title_id, session=None):
+    book_title = get_book_title(book_title_id=book_title_id, session=session)
+    
+    assert len(book_title) == 1
+
+    book_title = book_title[0]
+
+    stmt = (
+        select(book_table, publisher_table.c.publisher_name)
+        .select_from(book_table)
+        .where(book_table.c.book_title_id == book_title["book_title_id"])
+    )
+    result = session.execute(stmt).all()
+
+    book_title["available"] = [i._asdict() for i in result]
+
+    return book_title
+
 def add_book_to_receipt(book_receipt_id, book_ids, quantities, session=None):
 
     result = session.execute(
@@ -230,7 +248,7 @@ def get_book_receipt(book_receipt_id=None, session=None):
     rows = session.execute(stmt).all()
 
     assert len(rows) != 0
-    
+
     rows = [i._asdict() for i in rows]
 
     bt_id = list(set([i["book_receipt_id"] for i in rows]))

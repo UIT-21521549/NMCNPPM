@@ -42,7 +42,7 @@ def get_all():
 def create_user():
     data = request.get_json(force=True)
 
-    for k in ["email", "password"]:
+    for k in ["email", "password", "reader_type_id", "user_name", "birthday", "address"]:
         if k not in data.keys():
             return f"{k} needed", 400
 
