@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask import request
+from flask import request, make_response
 from flask import jsonify
 
 from flask import g
@@ -63,6 +63,9 @@ def create_user():
 
 @user_api.route("/get_auth_token", methods=["POST"])
 def get_token():
+    if request.cookies.get("session_token") is not None:
+        return "you are already logged in!", 400
+
     data = request.get_json(force=True)
 
     for k in ["email", "password"]:
@@ -71,13 +74,17 @@ def get_token():
 
     try:
         with Session() as session:
-            token = USER.create_jwt_token(
+            result = USER.create_jwt_token(
                 email=data["email"], password=data["password"], session=session
             )
     except:
         return "authentication failed", 400
+    
+    resp = make_response(result)
 
-    return {"token": token}
+    resp.set_cookie("session_token", result["token"])
+
+    return resp
 
 
 @user_api.route("/get_by_token", methods=["GET"])

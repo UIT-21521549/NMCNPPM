@@ -24,6 +24,7 @@ user_table = Table(
     # multiple users could have the same name
     Column("user_name", String(30)),
     Column("is_admin", Boolean, default=False, nullable=False),
+    Column("created_at", DateTime, nullable=False, default=func.now()),
 )
 
 # Loại độc giả
@@ -103,7 +104,7 @@ book_receipt_table = Table(
     "book_receipt",
     metadata_obj,
     Column("book_receipt_id", Integer, primary_key=True),
-    Column("entry_date", DateTime, nullable=False, default=func.now()),
+    Column("entry_date", DateTime, nullable=False, server_default=func.now()),
 )
 
 
@@ -125,7 +126,7 @@ lending_table = Table(
     metadata_obj,
     Column("lending_id", Integer, primary_key=True),
     Column("user_id", Integer, ForeignKey("user.user_id"), nullable=False),
-    Column("lending_date", DateTime, nullable=False, default=func.now()),
+    Column("lending_date", DateTime, nullable=False, server_default=func.now()),
     Column("return_date", DateTime),
 )
 

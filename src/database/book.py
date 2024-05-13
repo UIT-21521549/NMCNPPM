@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, null
+from sqlalchemy import select, insert, null, desc, asc
 
 from .models import (
     book_title_table,
@@ -99,8 +99,9 @@ def create_book_title(book_name, genre_id, session=None):
     return result.inserted_primary_key[0]
 
 
-def get_book_title(book_title_id=None, session=None):
-    # return all if book_title_id is None
+def get_book_title(book_title_ids=None, session=None):
+    # book_title_ids is list of id
+    # return all if book_title_ids is None
 
     stmt = (
         select(book_title_table, book_genre_table.c.genre_name, author_table)
@@ -108,8 +109,8 @@ def get_book_title(book_title_id=None, session=None):
         .join(book_author_list)
         .join(author_table)
     )
-    if book_title_id is not None:
-        stmt = stmt.where(book_title_table.c.book_title_id == book_title_id)
+    if book_title_ids is not None:
+        stmt = stmt.where(book_title_table.c.book_title_id.in_(book_title_ids))
 
     rows = session.execute(stmt).all()
 
@@ -186,9 +187,30 @@ def get_book(book_ids=None, session=None):
     return [i._asdict() for i in result]
 
 
+def get_n_newly_added_book_title(n=4, session=None):
+    # order by book_receipt entry_date
+
+    stmt = (
+        select(book_receipt_table, book_table.c.book_title_id)
+        .select_from(book_receipt_table)
+        .join(book_receipt_detail_table)
+        .join(book_table)
+        .order_by(desc(book_receipt_table.c.entry_date))
+        .group_by(book_table.c.book_title_id, book_receipt_table.c.entry_date)
+        .limit(n)
+    )
+
+    results = session.execute(stmt).all()
+
+    book_title_ids = [i._asdict()["book_title_id"] for i in results]
+
+
+    return get_book_title(book_title_ids, session=session)
+
+
 def get_book_title_details(book_title_id, session=None):
     book_title = get_book_title(book_title_id=book_title_id, session=session)
-    
+
     assert len(book_title) == 1
 
     book_title = book_title[0]
@@ -203,6 +225,7 @@ def get_book_title_details(book_title_id, session=None):
     book_title["editions"] = [i._asdict() for i in result]
 
     return book_title
+
 
 def add_book_to_receipt(book_receipt_id, book_ids, quantities, session=None):
 
