@@ -51,11 +51,15 @@ def create_user():
             new_user_id = USER.create_user(
                 email=data["email"],
                 password=data["password"],
-                # reader_type_id=data["reader_type_id"],
+                reader_type_id=data["reader_type_id"],
+                user_name=data["user_name"],
+                birthday=data["birthday"],
+                address=data["address"],
                 session=session,
             )
             session.commit()
-    except:
+    except Exception as e:
+        print(e)
         return "user creation failed", 400
 
     return {"user_id": new_user_id}

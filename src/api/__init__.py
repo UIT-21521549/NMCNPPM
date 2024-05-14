@@ -10,6 +10,8 @@ from .book import book_api
 from .book_receipt import book_receipt_api
 from .image import image_api
 
+from .parameter import param_api
+
 api = Blueprint("api", __name__, url_prefix="/api")
 
 api.register_blueprint(user_api)
@@ -29,3 +31,5 @@ api.register_blueprint(book_api)
 api.register_blueprint(book_receipt_api)
 
 api.register_blueprint(image_api)
+
+api.register_blueprint(param_api)
