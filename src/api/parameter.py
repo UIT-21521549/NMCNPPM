@@ -9,33 +9,19 @@ from src.database import PARAM, Session
 param_api = Blueprint("parameter", __name__, url_prefix="/param")
 
 
-@param_api.route("/get_one", methods=["GET"])
+@param_api.route("/get", methods=["GET"])
+@auth_decorator(admin_only=True)
 def get_one():
-    name = request.args.get("name")
-
-    if name is None:
-        return "param name required", 400
-
-    try:
-        with Session() as session:
-            param = PARAM.get_parameter(param_names=[name], session=session)
-    except:
-        return "parameter not found", 400
-
-    return param[0]
-
-
-@param_api.route("/get_all", methods=["GET"])
-def get_all():
     try:
         with Session() as session:
             param = PARAM.get_parameter(session=session)
     except:
-        return "no parameter found", 500
+        return "no parameter found", 400
 
     return param
 
 @param_api.route("/set", methods=["POST"])
+@auth_decorator(admin_only=True)
 def set_param():
     data = request.get_json(force=True)
 

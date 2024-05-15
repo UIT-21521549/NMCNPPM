@@ -1,5 +1,15 @@
-from sqlalchemy import MetaData, UniqueConstraint, ForeignKeyConstraint
-from sqlalchemy import Table, Column, Integer, Boolean, String, ForeignKey, DateTime, Enum, Float
+from sqlalchemy import MetaData, UniqueConstraint, ForeignKeyConstraint, CheckConstraint
+from sqlalchemy import (
+    Table,
+    Column,
+    Integer,
+    Boolean,
+    String,
+    ForeignKey,
+    DateTime,
+    Enum,
+    Float,
+)
 import enum
 from sqlalchemy.sql import func
 
@@ -24,7 +34,7 @@ user_table = Table(
     # multiple users could have the same name
     Column("user_name", String(30)),
     Column("is_admin", Boolean, default=False, nullable=False),
-    Column("created_at", DateTime, nullable=False, default=func.now()),
+    Column("created_at", DateTime, nullable=False, server_default=func.now()),
 )
 
 # Loại độc giả
@@ -44,8 +54,11 @@ book_title_table = Table(
     Column("book_title_id", Integer, primary_key=True),
     Column("book_name", String(30), nullable=False),
     Column("genre_id", Integer, ForeignKey("book_genre.genre_id"), nullable=False),
-    Column("image_id", Integer, ForeignKey("image_path.image_id", ondelete='SET NULL', onupdate="CASCADE")),
-
+    Column(
+        "image_id",
+        Integer,
+        ForeignKey("image_path.image_id", ondelete="SET NULL", onupdate="CASCADE"),
+    ),
 )
 
 # Thể loại Sách
@@ -91,12 +104,18 @@ book_table = Table(
     Column(
         "book_title_id", Integer, ForeignKey("book_title.book_title_id"), nullable=False
     ),
-    Column("publication_year", Integer, nullable=False),
+    Column(
+        "publication_year",
+        Integer,
+        CheckConstraint("publication_year>=1"),
+        nullable=False,
+    ),
     Column(
         "publisher_id", Integer, ForeignKey("publisher.publisher_id"), nullable=False
     ),
-    Column("price", Integer, nullable=False),
-    Column("quantity", Integer, nullable=False, default=0),
+    Column("price", Integer, CheckConstraint("price>=1"), nullable=False),
+    Column("quantity", Integer, CheckConstraint("quantity>=0"), nullable=False, default=0),
+    Column("available", Integer, CheckConstraint("available>=0"), nullable=False, default=0),
 )
 
 
@@ -118,7 +137,7 @@ book_receipt_detail_table = Table(
         primary_key=True,
     ),
     Column("book_id", Integer, ForeignKey("book.book_id"), primary_key=True),
-    Column("quantity", Integer, nullable=False),
+    Column("quantity", Integer, CheckConstraint("quantity>0"), nullable=False),
 )
 
 lending_table = Table(
@@ -128,13 +147,14 @@ lending_table = Table(
     Column("user_id", Integer, ForeignKey("user.user_id"), nullable=False),
     Column("lending_date", DateTime, nullable=False, server_default=func.now()),
     Column("return_date", DateTime),
+    Column("returned", Boolean, default=False),  # đã trả hay chưa
+    Column("penalty", Integer, default=0),  # số tiền phạt
 )
 
-
-class LendingStatus(enum.Enum):
-    returned = 0
-    lost = 1
-    lended = 2
+# class LendingStatus(enum.Enum):
+#     returned = 0
+#     lost = 1
+#     lended = 2
 
 
 lending_detail_table = Table(
@@ -142,8 +162,7 @@ lending_detail_table = Table(
     metadata_obj,
     Column("lending_id", Integer, ForeignKey("lending.lending_id"), primary_key=True),
     Column("book_id", Integer, ForeignKey("book.book_id"), primary_key=True),
-    # Column("quantity", Integer, nullable=False),
-    Column("status", Integer, Enum(LendingStatus), default=2),
+    Column("quantity", Integer, nullable=False),
 )
 
 
@@ -194,8 +213,14 @@ late_return_report_detail_table = Table(
 parameter_table = Table(
     "parameter",
     metadata_obj,
-    Column("parameter_name", String, primary_key=True),
-    Column("value", Integer),
+    Column("id_lock", Integer, CheckConstraint("id_lock<=1"), primary_key=True),
+    Column("minimum_age", Integer),
+    Column("maximum_age", Integer),
+    Column("maximum_account_age", Integer),
+    Column("maximum_publication_year_gab", Integer),
+    Column("maximum_lending_quantity", Integer),
+    Column("maximum_lending_period", Integer),
+    CheckConstraint("minimum_age < maximum_age"),
 )
 
 image_table = Table(

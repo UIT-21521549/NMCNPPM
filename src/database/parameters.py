@@ -14,48 +14,36 @@ PARAM_NAMES = [
     "maximum_lending_period",
 ]
 
-PARAM_DEFAULT_VALUES = [
-    18,
-    55,
-    6 * 31,  # 6 months
-    8,  # in year
-    5,  # books
-    4,  # days
-]
-
 
 def init_parameter_table(session=None):
-    stmt = insert(parameter_table)
-
-    result = session.execute(
-        stmt,
-        [
-            {"parameter_name": p, "value": v}
-            for p, v in zip(PARAM_NAMES, PARAM_DEFAULT_VALUES)
-        ],
+    stmt = insert(parameter_table).values(
+        minimum_age=18,
+        maximum_age=55,
+        maximum_account_age=6 * 31,  # 6 months
+        maximum_publication_year_gab=8,  # in year
+        maximum_lending_quantity=5,  # books
+        maximum_lending_period=4,  # days
     )
 
+    result = session.execute(stmt)
 
-def get_parameter(param_names=None, session=None):
-    # return all if param_names is None
+
+def get_parameter(session=None):
     stmt = select(parameter_table)
-
-    if param_names is not None:
-        stmt = stmt.filter(parameter_table.c.parameter_name.in_(param_names))
 
     result = session.execute(stmt).all()
 
-    assert len(result) != 0
+    assert len(result) == 1
 
-    return [i._asdict() for i in result]
+    result = result[0]._asdict()
+
+    result.pop('id_lock', None)
+
+    return result
 
 
 def set_param(param_name, new_value, session=None):
+    assert param_name in PARAM_NAMES
 
-    stmt = (
-        update(parameter_table)
-        .where(parameter_table.c.parameter_name == param_name)
-        .values(value=new_value)
-    )
-
-    session.execute(stmt)
+    stmt = update(parameter_table)
+    session.execute(stmt, {param_name: new_value})

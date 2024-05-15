@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, null, desc, asc
+from sqlalchemy import select, insert, null, desc, asc, update
 
 from .models import (
     book_title_table,
@@ -204,7 +204,6 @@ def get_n_newly_added_book_title(n=4, session=None):
 
     book_title_ids = [i._asdict()["book_title_id"] for i in results]
 
-
     return get_book_title(book_title_ids, session=session)
 
 
@@ -229,13 +228,28 @@ def get_book_title_details(book_title_id, session=None):
 
 def add_book_to_receipt(book_receipt_id, book_ids, quantities, session=None):
 
-    result = session.execute(
+    session.execute(
         insert(book_receipt_detail_table),
         [
             {"book_receipt_id": book_receipt_id, "book_id": i, "quantity": q}
             for i, q in zip(book_ids, quantities)
         ],
     )
+    # update book quantity
+    for i, q in zip(book_ids, quantities):
+        session.execute(
+            update(book_table)
+            .where(book_table.c.book_id == i)
+            .values(quantity=book_table.c.quantity + q)
+        )
+    
+    # do the same to the available counter
+    for i, q in zip(book_ids, quantities):
+        session.execute(
+            update(book_table)
+            .where(book_table.c.book_id == i)
+            .values(available=book_table.c.available + q)
+        )
 
 
 def create_book_receipt(book_ids=[], quantities=[], session=None):
