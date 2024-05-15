@@ -1,5 +1,5 @@
 from sqlalchemy import select, insert, null, update
-from .connection import Session
+from .connection import Session, debug_mode
 from datetime import datetime, timezone, timedelta, date
 from sqlalchemy.sql import func
 from .parameters import get_parameter
@@ -11,7 +11,7 @@ from .models import (
     book_table,
     user_table,
 )
-
+import random
 
 def add_book_to_lending(lending_id, book_ids, quantities, session=None):
     assert len(book_ids) == len(quantities)
@@ -119,7 +119,7 @@ def return_lending(lending_id, session=None):
         update(lending_table)
         .where(lending_table.c.lending_id == lending_id)
         .values(
-            returned_lock=lending_table.c.returned_lock + 1, return_date=func.now()
+            returned_lock=lending_table.c.returned_lock + 1, return_date=func.now(), lending_lock=null()
         )
         .returning(lending_table.c["return_deadline", "return_date", "user_id"])
     )
@@ -141,10 +141,12 @@ def return_lending(lending_id, session=None):
     # calculate the penalty
     days_late = (return_date - return_deadline).days
 
-    # days_late=12
+
+    if debug_mode:
+        days_late=random.randrange(0, 10)
 
     if days_late > 0:
-        penalty = days_late * 1000
+        penalty = days_late * 1000 * sum([i["quantity"] for i in lending["items"]])
         # update the penalty
 
         stmt = (

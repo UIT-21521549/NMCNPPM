@@ -36,8 +36,7 @@ user_table = Table(
     Column("is_admin", Boolean, default=False, nullable=False),
     Column("created_at", DateTime, nullable=False, server_default=func.now()),
     Column("expiry_date", DateTime),
-    Column("penalty_owed", Integer, default=0),
-
+    Column("penalty_owed", Integer, CheckConstraint("penalty_owed>=0"), default=0),
 )
 
 # Loại độc giả
@@ -117,10 +116,13 @@ book_table = Table(
         "publisher_id", Integer, ForeignKey("publisher.publisher_id"), nullable=False
     ),
     Column("price", Integer, CheckConstraint("price>=1"), nullable=False),
-    Column("quantity", Integer, CheckConstraint("quantity>=0"), nullable=False, default=0),
-    Column("available", Integer, CheckConstraint("available>=0"), nullable=False, default=0),
+    Column(
+        "quantity", Integer, CheckConstraint("quantity>=0"), nullable=False, default=0
+    ),
+    Column(
+        "available", Integer, CheckConstraint("available>=0"), nullable=False, default=0
+    ),
 )
-
 
 
 book_receipt_table = Table(
@@ -150,11 +152,18 @@ lending_table = Table(
     Column("lending_id", Integer, primary_key=True),
     Column("user_id", Integer, ForeignKey("user.user_id"), nullable=False),
     Column("lending_date", DateTime, nullable=False, server_default=func.now()),
-    Column("return_deadline", DateTime), #hạn trả sách
+    Column("return_deadline", DateTime),  # hạn trả sách
     Column("return_date", DateTime),
     Column("penalty", Integer, default=0),  # số tiền phạt
-    
-    Column("returned_lock", Integer, CheckConstraint("returned_lock>=0 and returned_lock<=1") , default=0),  # đã trả hay chưa
+    Column(
+        "lending_lock", Boolean, default=True, unique=True, nullable=True
+    ),  # chỉ 1 row có lending_lock là True (còn lại là Null)
+    Column(
+        "returned_lock",
+        Integer,
+        CheckConstraint("returned_lock>=0 and returned_lock<=1"),
+        default=0,
+    ),  # chỉ trả sách được 1 lần
 )
 
 # class LendingStatus(enum.Enum):
@@ -177,7 +186,7 @@ fines_collection_table = Table(
     metadata_obj,
     Column("fine_collection_id", Integer, primary_key=True),
     Column("user_id", Integer, ForeignKey("user.user_id"), nullable=False),
-    Column("amount", Integer, nullable=False),
+    Column("amount", Integer, CheckConstraint("amount>0"), nullable=False),
 )
 
 report_by_genre_table = Table(

@@ -42,7 +42,14 @@ def get_all():
 def create_user():
     data = request.get_json(force=True)
 
-    for k in ["email", "password", "reader_type_id", "user_name", "birthday", "address"]:
+    for k in [
+        "email",
+        "password",
+        "reader_type_id",
+        "user_name",
+        "birthday",
+        "address",
+    ]:
         if k not in data.keys():
             return f"{k} needed", 400
 
@@ -83,7 +90,7 @@ def get_token():
             )
     except:
         return "authentication failed", 400
-    
+
     resp = make_response(result)
 
     resp.set_cookie("session_token", result["token"])
@@ -104,3 +111,29 @@ def get_current():
         return "user not found", 400
 
     return info[0]
+
+
+@user_api.route("/pay_penalty", methods=["POST"])
+@auth_decorator(admin_only=True)
+def pay_penalty():
+    data = request.get_json(force=True)
+
+    for k in ["user_id", "amount"]:
+        if k not in data.keys():
+            return f"{k} needed", 400
+
+    try:
+        with Session() as session:
+            result = USER.pay_penalty(
+                user_id=data["user_id"], amount=data["amount"], session=session
+            )
+            session.commit()
+    except Exception as e:
+        return "pay penalty failed", 400
+    
+    return "done"
+
+# @user_api.route("/pay_penalty", methods=["POST"])
+# @auth_decorator(admin_only=True)
+# def get_penalty():
+#     publisher_id = request.args.get("id")

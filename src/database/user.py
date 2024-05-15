@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timezone, timedelta, date
 from hashlib import sha256
 
-from .models import user_table, reader_type_table
+from .models import user_table, reader_type_table, fines_collection_table
 from .connection import Session
 from .parameters import get_parameter
 
@@ -182,3 +182,33 @@ def verify_jwt_token(token):
         "user_id": payload["user_id"],
         "is_admin": payload["is_admin"],
     }
+
+def pay_penalty(user_id, amount, session=None):
+
+    update_stmt = update(user_table).where(
+        user_table.c.user_id==user_id
+    ).values(
+        penalty_owed = user_table.c.penalty_owed - amount
+    )
+
+    session.execute(update_stmt)
+
+    stmt = insert(fines_collection_table).values(
+        user_id=user_id,
+        amount=amount
+    )
+    result = session.execute(stmt)
+
+    return result.inserted_primary_key[0]
+
+def get_penalties_paid(user_id=None, session=None):
+    stmt = select(fines_collection_table)
+
+    if user_id is not None:
+        stmt = stmt.where(fines_collection_table.c.user_id==user_id)
+    
+    result = session.execute(stmt).all()
+
+    assert len(result) != 0
+
+    return [i._asdict() for i in result]
