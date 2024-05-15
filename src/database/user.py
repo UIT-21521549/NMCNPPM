@@ -1,7 +1,7 @@
 from sqlalchemy import select, insert, null, update
 import jwt
 import os
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date
 from hashlib import sha256
 
 from .models import user_table, reader_type_table
@@ -10,6 +10,10 @@ from .parameters import get_parameter
 
 from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import text
+
+def calculate_age(born):
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 
 def create_user(
@@ -26,9 +30,15 @@ def create_user(
     assert isinstance(password, str)
 
     # TODO: check birthday and validate input
+    
+    param = get_parameter(session=session)
+    minimum_age = param["minimum_age"]
+    maximum_age = param["maximum_age"]
 
     if birthday is not null():
         birthday = datetime.strptime(birthday, "%d-%m-%Y").date()
+        age = calculate_age(birthday)
+        assert minimum_age <= age and maximum_age > age 
 
     password_hash = sha256(str(password).encode("utf-8")).hexdigest()
 
@@ -54,7 +64,7 @@ def create_user(
     if is_admin:
         return user_id
     
-    maximum_account_age = get_parameter("maximum_account_age", session=session)
+    maximum_account_age = param["maximum_account_age"]
 
     # now update the expiry_date of user
     stmt = (

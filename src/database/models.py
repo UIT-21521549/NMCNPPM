@@ -150,9 +150,11 @@ lending_table = Table(
     Column("lending_id", Integer, primary_key=True),
     Column("user_id", Integer, ForeignKey("user.user_id"), nullable=False),
     Column("lending_date", DateTime, nullable=False, server_default=func.now()),
+    Column("return_deadline", DateTime), #hạn trả sách
     Column("return_date", DateTime),
-    Column("returned", Integer, CheckConstraint("returned>=0 and returned<=1") , default=0),  # đã trả hay chưa
     Column("penalty", Integer, default=0),  # số tiền phạt
+    
+    Column("returned_lock", Integer, CheckConstraint("returned_lock>=0 and returned_lock<=1") , default=0),  # đã trả hay chưa
 )
 
 # class LendingStatus(enum.Enum):

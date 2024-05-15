@@ -60,3 +60,25 @@ def create():
         return "create lending failed", 400
 
     return {"lending_id": idx}
+
+
+@lending_api.route("/return", methods=["POST"])
+@auth_decorator(admin_only=True)
+def return_lending():
+    lending_id = request.args.get("id")
+
+    if lending_id is None:
+        return "lending_id required", 400
+
+    try:
+        with Session() as session:
+            idx = LENDING.return_lending(
+                lending_id=lending_id,
+                session=session
+            )
+            session.commit()
+    except Exception as e:
+        print(e)
+        return "return lending failed", 400
+
+    return "done"
