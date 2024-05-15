@@ -17,9 +17,6 @@ def random_suffix(length):
 
 def set_up(session):
 
-    USER.create_user(
-        email="abc", password="abc", user_name="abc", session=session
-    )
     for rt in ["X", "Y"]:
         USER.create_reader_type(reader_type=rt, session=session)
 
@@ -28,10 +25,10 @@ def set_up(session):
             email=random_suffix(8),
             password=random_suffix(8),
             reader_type_id=random.randrange(1, 3),
-            user_name=random_suffix(8),
+            user_name=randomword(15),
             session=session,
         )
-
+        
     for i in range(10):
         BOOK.create_genre(f"genre{random_suffix(4)}", session=session)
 

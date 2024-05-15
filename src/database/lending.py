@@ -84,3 +84,10 @@ def get_lending(lending_ids=None, session=None):
         )
 
     return result
+
+# def return_lending(lending_id, session=None):
+#     lending = get_lending([lending_id], session=session)
+#     assert len(lending) == 1
+#     lending = lending[0]
+
+#     assert 

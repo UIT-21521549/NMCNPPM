@@ -35,6 +35,9 @@ user_table = Table(
     Column("user_name", String(30)),
     Column("is_admin", Boolean, default=False, nullable=False),
     Column("created_at", DateTime, nullable=False, server_default=func.now()),
+    Column("expiry_date", DateTime),
+    Column("penalty_owed", Integer, default=0),
+
 )
 
 # Loại độc giả
@@ -119,6 +122,7 @@ book_table = Table(
 )
 
 
+
 book_receipt_table = Table(
     "book_receipt",
     metadata_obj,
@@ -147,7 +151,7 @@ lending_table = Table(
     Column("user_id", Integer, ForeignKey("user.user_id"), nullable=False),
     Column("lending_date", DateTime, nullable=False, server_default=func.now()),
     Column("return_date", DateTime),
-    Column("returned", Boolean, default=False),  # đã trả hay chưa
+    Column("returned", Integer, CheckConstraint("returned>=0 and returned<=1") , default=0),  # đã trả hay chưa
     Column("penalty", Integer, default=0),  # số tiền phạt
 )
 

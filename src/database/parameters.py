@@ -30,7 +30,7 @@ def init_parameter_table(session=None):
 
 def get_parameter(param_name=None, session=None):
     stmt = select(parameter_table)
-
+    
     result = session.execute(stmt).all()
 
     assert len(result) == 1
@@ -42,7 +42,6 @@ def get_parameter(param_name=None, session=None):
         return result[param_name]
 
     result.pop('id_lock', None)
-
 
     return result
 

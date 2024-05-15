@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, null
+from sqlalchemy import select, insert, null, update
 import jwt
 import os
 from datetime import datetime, timezone, timedelta
@@ -6,6 +6,10 @@ from hashlib import sha256
 
 from .models import user_table, reader_type_table
 from .connection import Session
+from .parameters import get_parameter
+
+from sqlalchemy.sql import func
+from sqlalchemy.sql.expression import text
 
 
 def create_user(
@@ -16,7 +20,7 @@ def create_user(
     birthday=null(),
     address=null(),
     is_admin=False,
-    session=None
+    session=None,
 ):
     assert isinstance(email, str)
     assert isinstance(password, str)
@@ -36,12 +40,33 @@ def create_user(
         birthday=birthday,
         address=address,
         is_admin=is_admin,
+    ).returning(
+        user_table.c["user_id", "created_at"]
     )
 
-    result = session.execute(stmt)
+    result = session.execute(stmt).all()
+
+    assert len(result) == 1
+
+    user_id, created_at = result[0]
+
+    # admin account does not have expiry date 
+    if is_admin:
+        return user_id
     
+    maximum_account_age = get_parameter("maximum_account_age", session=session)
+
+    # now update the expiry_date of user
+    stmt = (
+        update(user_table)
+        .where(user_table.c.user_id == user_id)
+        .values(expiry_date=created_at + timedelta(days=maximum_account_age))
+    )
+
+    session.execute(stmt)
+
     # return user_id
-    return result.inserted_primary_key[0]
+    return user_id
 
 
 def get_users(user_ids=None, session=None):
@@ -54,7 +79,10 @@ def get_users(user_ids=None, session=None):
             "birthday",
             "address",
             "user_name",
+            "created_at",
             "is_admin",
+            "expiry_date",
+            "penalty_owed"
         ],
         reader_type_table.c.reader_type,
     ).join(reader_type_table, isouter=True)
@@ -89,7 +117,7 @@ def get_reader_type(reader_type_id=None, session=None):
         stmt = stmt.where(reader_type_table.c.reader_type_id == reader_type_id)
 
     result = session.execute(stmt).all()
-    
+
     assert len(result) != 0
 
     return [i._asdict() for i in result]
@@ -130,10 +158,7 @@ def create_jwt_token(email, password, session=None):
 
     token = jwt.encode(payload, jwt_secret, algorithm="HS256")
 
-    return {
-        "token": token,
-        "user_id": user["user_id"]
-    }
+    return {"token": token, "user_id": user["user_id"]}
 
 
 def verify_jwt_token(token):
