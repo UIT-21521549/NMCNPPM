@@ -28,7 +28,7 @@ def init_parameter_table(session=None):
     result = session.execute(stmt)
 
 
-def get_parameter(session=None):
+def get_parameter(param_name=None, session=None):
     stmt = select(parameter_table)
 
     result = session.execute(stmt).all()
@@ -37,7 +37,12 @@ def get_parameter(session=None):
 
     result = result[0]._asdict()
 
+    if param_name is not None:
+        assert param_name in PARAM_NAMES
+        return result[param_name]
+
     result.pop('id_lock', None)
+
 
     return result
 
