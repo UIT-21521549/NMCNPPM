@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import request
 from src.database import USER
-from flask import g
+from flask import g, make_response
 
 def auth_decorator(admin_only=False, logged_in_required=True):
     # admin_only: if true, only admin user can use this endpoint
@@ -27,7 +27,11 @@ def auth_decorator(admin_only=False, logged_in_required=True):
                 try:
                     payload = USER.verify_jwt_token(token)
                 except:
-                    return "token expired!", 403
+                    resp = make_response("session token expired!")
+                    
+                    resp.delete_cookie('session_token')
+
+                    return resp, 403
 
                 if admin_only and not payload["is_admin"]:
                     return "you can't be here", 403
