@@ -3,6 +3,7 @@ from .connection import Session, debug_mode
 from datetime import datetime, timezone, timedelta, date
 from sqlalchemy.sql import func
 from .parameters import get_parameter
+from .user import get_users
 
 from .models import (
     lending_table,
@@ -12,6 +13,7 @@ from .models import (
     user_table,
 )
 import random
+
 
 def add_book_to_lending(lending_id, book_ids, quantities, session=None):
     assert len(book_ids) == len(quantities)
@@ -34,6 +36,13 @@ def add_book_to_lending(lending_id, book_ids, quantities, session=None):
 
 
 def create_book_lending(user_id, book_ids=[], quantities=[], session=None):
+
+    user_expiry_date = get_users([user_id], session=session)[0]["expiry_date"]
+
+    diff = datetime.now() - user_expiry_date
+
+    assert diff.days < 0
+
     assert len(book_ids) == len(quantities)
 
     stmt = (
@@ -118,9 +127,7 @@ def return_lending(lending_id, session=None):
     stmt = (
         update(lending_table)
         .where(lending_table.c.lending_id == lending_id)
-        .values(
-            returned_lock=lending_table.c.returned_lock + 1, return_date=func.now(), lending_lock=null()
-        )
+        .values(returned_lock=lending_table.c.returned_lock + 1, return_date=func.now())
         .returning(lending_table.c["return_deadline", "return_date", "user_id"])
     )
 
@@ -141,9 +148,8 @@ def return_lending(lending_id, session=None):
     # calculate the penalty
     days_late = (return_date - return_deadline).days
 
-
     if debug_mode:
-        days_late=random.randrange(0, 10)
+        days_late = random.randrange(0, 10)
 
     if days_late > 0:
         penalty = days_late * 1000 * sum([i["quantity"] for i in lending["items"]])
@@ -163,4 +169,3 @@ def return_lending(lending_id, session=None):
             .values(penalty_owed=user_table.c.penalty_owed + penalty)
         )
         session.execute(stmt)
-    

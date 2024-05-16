@@ -2,6 +2,7 @@ import os
 from .connection import Session, create_new
 import src.database.book as BOOK
 import src.database.user as USER
+import src.database.lending as LENDING
 import random, string
 
 
@@ -20,7 +21,7 @@ def set_up(session):
     for rt in ["X", "Y"]:
         USER.create_reader_type(reader_type=rt, session=session)
 
-    for i in range(4):
+    for i in range(10):
         USER.create_user(
             email=random_suffix(8),
             password=random_suffix(8),
@@ -58,6 +59,13 @@ def set_up(session):
             session=session,
         )
 
+        BOOK.create_book_receipt(
+            book_ids=[i+1],
+            quantities=[random.randrange(1, 10)],
+            session=session,
+        )
+
+
     for i in range(15):
         no_b = random.randrange(1, 5)
 
@@ -66,3 +74,15 @@ def set_up(session):
             quantities=[random.randrange(1, 20) for _ in range(no_b)],
             session=session,
         )
+    
+    for i in range(2, 10):
+        no_b = random.randrange(1, 3)
+        print(i)
+        LENDING.create_book_lending(
+            user_id=i,
+            book_ids=random.sample(range(1, 31), no_b),
+            quantities=[random.randrange(1, 3) for _ in range(no_b)],
+            session=session,
+        )
+    
+

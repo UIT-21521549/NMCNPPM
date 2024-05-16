@@ -156,9 +156,6 @@ lending_table = Table(
     Column("return_date", DateTime),
     Column("penalty", Integer, default=0),  # số tiền phạt
     Column(
-        "lending_lock", Boolean, default=True, unique=True, nullable=True
-    ),  # chỉ 1 row có lending_lock là True (còn lại là Null)
-    Column(
         "returned_lock",
         Integer,
         CheckConstraint("returned_lock>=0 and returned_lock<=1"),
