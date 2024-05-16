@@ -169,3 +169,17 @@ def return_lending(lending_id, session=None):
             .values(penalty_owed=user_table.c.penalty_owed + penalty)
         )
         session.execute(stmt)
+
+def get_lending_by_user_id(user_id, session=None):
+
+    stmt = select(lending_table.c.lending_id).where(
+        lending_table.c.user_id == user_id
+    )
+    result = session.execute(stmt).all()
+
+    lending_ids = [i[0] for i in result]
+
+    if len(lending_ids) == 0:
+        return []
+    
+    return get_lending(lending_ids=lending_ids, session=session)

@@ -21,6 +21,14 @@ def set_up(session):
     for rt in ["X", "Y"]:
         USER.create_reader_type(reader_type=rt, session=session)
 
+    USER.create_user(
+        email="abc1",
+        password="abc1",
+        reader_type_id=random.randrange(1, 3),
+        user_name=randomword(15),
+        session=session,
+    )
+
     for i in range(10):
         USER.create_user(
             email=random_suffix(8),
@@ -61,7 +69,7 @@ def set_up(session):
 
         BOOK.create_book_receipt(
             book_ids=[i+1],
-            quantities=[random.randrange(1, 10)],
+            quantities=[random.randrange(10, 30)],
             session=session,
         )
 

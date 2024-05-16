@@ -10,6 +10,7 @@ lending_api = Blueprint("book_lending", __name__, url_prefix="/lending")
 
 
 @lending_api.route("/get_one", methods=["GET"])
+@auth_decorator(admin_only=True)
 def get_one():
     lending_id = request.args.get("id")
 
@@ -25,7 +26,38 @@ def get_one():
     return re[0]
 
 
+@lending_api.route("/get_by_user", methods=["GET"])
+@auth_decorator(admin_only=True)
+def get_by_user_id():
+    user_id = request.args.get("id")
+
+    if user_id is None:
+        return "user id required", 400
+
+    try:
+        with Session() as session:
+            re = LENDING.get_lending_by_user_id(user_id, session=session)
+    except:
+        return "lending_id not found", 400
+
+    return re
+
+
+@lending_api.route("/get_current_user", methods=["GET"])
+@auth_decorator()
+def get_by_current_user_id():
+    user_id = g.user_id
+
+    try:
+        with Session() as session:
+            re = LENDING.get_lending_by_user_id(user_id, session=session)
+    except:
+        return "lending_id not found", 400
+
+    return re
+
 @lending_api.route("/get_all", methods=["GET"])
+@auth_decorator(admin_only=True)
 def get_all():
 
     try:
