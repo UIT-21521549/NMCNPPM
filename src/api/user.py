@@ -112,6 +112,15 @@ def get_current():
 
     return info[0]
 
+@user_api.route("/logout", methods=["GET"])
+@auth_decorator()
+def log_out():
+    resp = make_response("logout")
+
+    resp.delete_cookie('session_token')
+
+    return resp
+
 
 @user_api.route("/pay_penalty", methods=["POST"])
 @auth_decorator(admin_only=True)

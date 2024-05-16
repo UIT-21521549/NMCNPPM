@@ -69,7 +69,7 @@ def set_up(session):
 
         BOOK.create_book_receipt(
             book_ids=[i+1],
-            quantities=[random.randrange(10, 30)],
+            quantities=[random.randrange(1, 30)],
             session=session,
         )
 
@@ -85,7 +85,6 @@ def set_up(session):
     
     for i in range(2, 10):
         no_b = random.randrange(1, 3)
-        print(i)
         LENDING.create_book_lending(
             user_id=i,
             book_ids=random.sample(range(1, 31), no_b),

@@ -1,4 +1,4 @@
-from .connection import Session, create_new, debug_mode
+from .connection import Session, create_new, debug_mode, db_engine
 import src.database.user as USER
 import src.database.book as BOOK
 import src.database.parameters as PARAM
@@ -19,10 +19,16 @@ if create_new:
     USER.create_user(
         email="admin@admin", password=admin_password, user_name="admin", is_admin=True, session=session
     )
+    session.commit()
+    session.close()
 
     if debug_mode:
         # create dummy data
-        set_up(session)
-    
-    session.commit()
-    session.close()
+        while True:
+            try:
+                with Session() as session:
+                    set_up(session)
+                    session.commit()
+            except:
+                continue
+            break

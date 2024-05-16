@@ -10,9 +10,6 @@ def auth_decorator(admin_only=False, logged_in_required=True):
         @wraps(f)
         def __auth_decorator(*args, **kwargs):
 
-            if admin_only:
-                logged_in_required=True
-
             token = request.cookies.get("session_token")
             
             if token is None:
@@ -23,8 +20,7 @@ def auth_decorator(admin_only=False, logged_in_required=True):
 
                     token = data["session_token"]
                 except:
-                    
-                    if logged_in_required:
+                    if logged_in_required or admin_only:
                         return "session_token needed", 400
             
             if token is not None:
