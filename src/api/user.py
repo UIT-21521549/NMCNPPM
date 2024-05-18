@@ -27,6 +27,23 @@ def get_one():
     return users[0]
 
 
+@user_api.route("/get_by_email", methods=["GET"])
+def get_by_email():
+    data = request.get_json(force=True)
+
+    for k in ["email"]:
+        if k not in data.keys():
+            return f"{k} needed", 400
+
+    try:
+        with Session() as session:
+            users = USER.get_user_by_email(user_email=data["email"], session=session)
+    except Exception as e:
+        return "email not found", 400
+
+    return users[0]
+
+
 @user_api.route("/get_all", methods=["GET"])
 def get_all():
     try:
@@ -112,12 +129,13 @@ def get_current():
 
     return info[0]
 
+
 @user_api.route("/logout", methods=["GET"])
 @auth_decorator()
 def log_out():
     resp = make_response("logout")
 
-    resp.delete_cookie('session_token')
+    resp.delete_cookie("session_token")
 
     return resp
 
@@ -139,8 +157,9 @@ def pay_penalty():
             session.commit()
     except Exception as e:
         return "pay penalty failed", 400
-    
+
     return "done"
+
 
 # @user_api.route("/pay_penalty", methods=["POST"])
 # @auth_decorator(admin_only=True)

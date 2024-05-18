@@ -24,11 +24,16 @@ if create_new:
 
     if debug_mode:
         # create dummy data
-        while True:
+
+        print("create dummy data")
+        for i in range(20):
+            print(f"try {i}")
             try:
                 with Session() as session:
                     set_up(session)
                     session.commit()
             except:
                 continue
+            
+            print("success!")
             break
