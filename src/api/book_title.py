@@ -69,6 +69,23 @@ def get_detail():
 
     return result
 
+
+@book_title_api.route("/search", methods=["GET"])
+def search():
+    query = request.args.get("query")
+
+    if query is None:
+        return "query required", 400
+
+    try:
+        with Session() as session:
+            result = BOOK.search_book_title_by_string(query=query, session=session)
+    except Exception as e:
+        print(e)
+        return "book not found", 500
+
+    return result
+
 @book_title_api.route("/get_new_books", methods=["GET"])
 def get_new_books():
     n = request.args.get("n")

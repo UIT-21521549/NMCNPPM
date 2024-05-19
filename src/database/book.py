@@ -1,5 +1,5 @@
-from sqlalchemy import select, insert, null, desc, asc, update
-
+from sqlalchemy import select, insert, null, desc, asc, update, or_, func
+from sqlalchemy.sql import text
 from .models import (
     book_title_table,
     book_genre_table,
@@ -106,8 +106,8 @@ def get_book_title(book_title_ids=None, session=None):
     stmt = (
         select(book_title_table, book_genre_table.c.genre_name, author_table)
         .join(book_genre_table)
-        .join(book_author_list)
-        .join(author_table)
+        .join(book_author_list, isouter=True)
+        .join(author_table, isouter=True)
     )
     if book_title_ids is not None:
         stmt = stmt.where(book_title_table.c.book_title_id.in_(book_title_ids))
@@ -138,6 +138,39 @@ def get_book_title(book_title_ids=None, session=None):
             }
         )
     return result
+
+
+from sqlalchemy.types import String
+
+
+def search_book_title_by_string(query, session=None):
+    string = (
+        book_title_table.c.book_name
+        + " "
+        + func.coalesce(book_genre_table.c.genre_name, "")
+        + " "
+        + func.coalesce(author_table.c.author_name, "")
+    ).label("string")
+
+    stmt = (
+        select(book_title_table.c.book_title_id, string)
+        .join(book_genre_table, isouter=True)
+        .join(book_author_list, isouter=True)
+        .join(author_table, isouter=True)
+        .filter(string.ilike(f"%{query}%"))
+    )
+
+    rows = session.execute(stmt).all()
+
+    rows = [i._asdict() for i in rows]
+
+    book_title_ids = [r["book_title_id"] for r in rows]
+
+    book_title_ids = list(set(book_title_ids))
+
+    assert len(book_title_ids) != 0
+
+    return get_book_title(book_title_ids, session=session)
 
 
 def add_authors_to_book(book_title_id, author_ids, session=None):
@@ -203,6 +236,7 @@ def get_book_by_book_title_id(book_title_id, session=None):
     assert len(result) != 0
 
     return [i._asdict() for i in result]
+
 
 def get_n_newly_added_book_title(n=4, session=None):
     # order by book_receipt entry_date

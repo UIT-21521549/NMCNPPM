@@ -5,3 +5,4 @@ Flask
 python-dotenv
 flask-cors
 pillow
+sqlalchemy-utils
