@@ -37,7 +37,7 @@ def set_up(session):
             user_name=randomword(15),
             session=session,
         )
-        
+
     for i in range(10):
         BOOK.create_genre(f"genre{random_suffix(4)}", session=session)
 
@@ -68,11 +68,10 @@ def set_up(session):
         )
 
         BOOK.create_book_receipt(
-            book_ids=[i+1],
+            book_ids=[i + 1],
             quantities=[random.randrange(1, 30)],
             session=session,
         )
-
 
     for i in range(15):
         no_b = random.randrange(1, 5)
@@ -82,7 +81,7 @@ def set_up(session):
             quantities=[random.randrange(1, 20) for _ in range(no_b)],
             session=session,
         )
-    
+
     for i in range(2, 10):
         no_b = random.randrange(1, 3)
         LENDING.create_book_lending(
@@ -91,5 +90,13 @@ def set_up(session):
             quantities=[random.randrange(1, 3) for _ in range(no_b)],
             session=session,
         )
-    
 
+    for i in range(1, 7):
+        LENDING.return_lending(lending_id=i, session=session)
+
+    for j in range(3):
+        USER.pay_penalty(
+            user_id=2,
+            amount=30,
+            session=session
+        )

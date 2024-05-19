@@ -22,6 +22,21 @@ def get_one():
     return re[0]
 
 
+
+@book_api.route("/get_by_title_id", methods=["GET"])
+def get_by_title_id():
+    book_title_id = request.args.get("id")
+    if book_title_id is None:
+        return "book_title_id required", 400
+    try:
+        with Session() as session:
+            re = BOOK.get_book_by_book_title_id(book_title_id, session=session)
+    except Exception as e:
+        print(e)
+        return "book_title not found", 400
+
+    return re
+
 @book_api.route("/get_all", methods=["GET"])
 def get_all():
     

@@ -64,6 +64,7 @@ def get_detail():
         with Session() as session:
             result = BOOK.get_book_title_details(book_title_id, session=session)
     except Exception as e:
+        print(e)
         return "book_title not found", 500
 
     return result

@@ -166,7 +166,7 @@ def create_book(book_title_id, publication_year, publisher_id, price, session=No
 
 
 def get_book(book_ids=None, session=None):
-    # return all if book_title_id is None
+    # return all if book_ids is None
 
     stmt = (
         select(
@@ -186,6 +186,23 @@ def get_book(book_ids=None, session=None):
 
     return [i._asdict() for i in result]
 
+
+def get_book_by_book_title_id(book_title_id, session=None):
+
+    stmt = (
+        select(
+            book_table,
+            publisher_table.c.publisher_name,
+        )
+        .select_from(book_table)
+        .join(publisher_table)
+        .where(book_table.c.book_title_id == book_title_id)
+    )
+    result = session.execute(stmt).all()
+
+    assert len(result) != 0
+
+    return [i._asdict() for i in result]
 
 def get_n_newly_added_book_title(n=4, session=None):
     # order by book_receipt entry_date
@@ -208,7 +225,7 @@ def get_n_newly_added_book_title(n=4, session=None):
 
 
 def get_book_title_details(book_title_id, session=None):
-    book_title = get_book_title(book_title_id=book_title_id, session=session)
+    book_title = get_book_title([book_title_id], session=session)
 
     assert len(book_title) == 1
 
@@ -216,7 +233,7 @@ def get_book_title_details(book_title_id, session=None):
 
     stmt = (
         select(book_table, publisher_table.c.publisher_name)
-        .select_from(book_table)
+        .join(publisher_table)
         .where(book_table.c.book_title_id == book_title["book_title_id"])
     )
     result = session.execute(stmt).all()
@@ -242,7 +259,7 @@ def add_book_to_receipt(book_receipt_id, book_ids, quantities, session=None):
             .where(book_table.c.book_id == i)
             .values(quantity=book_table.c.quantity + q)
         )
-    
+
     # do the same to the available counter
     for i, q in zip(book_ids, quantities):
         session.execute(
