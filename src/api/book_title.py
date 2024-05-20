@@ -82,7 +82,7 @@ def search():
             result = BOOK.search_book_title_by_string(query=query, session=session)
     except Exception as e:
         print(e)
-        return "book not found", 500
+        return "book not found", 400
 
     return result
 
