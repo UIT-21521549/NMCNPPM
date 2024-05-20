@@ -3,6 +3,7 @@ import src.database.user as USER
 import src.database.book as BOOK
 import src.database.parameters as PARAM
 import src.database.lending as LENDING
+import src.database.report as REPORT
 
 import src.database.image as IMAGE
 from .add_dummy_data import set_up

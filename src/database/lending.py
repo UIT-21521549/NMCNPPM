@@ -4,6 +4,9 @@ from datetime import datetime, timezone, timedelta, date
 from sqlalchemy.sql import func
 from .parameters import get_parameter
 from .user import get_users
+from .book import get_book, get_book_title
+from.report import update_rgt
+from datetime import datetime as dt
 
 from .models import (
     lending_table,
@@ -36,6 +39,16 @@ def add_book_to_lending(lending_id, book_ids, quantities, session=None):
 
 
 def create_book_lending(user_id, book_ids=[], quantities=[], session=None):
+    for book_id in book_ids:
+        book = get_book(book_id, session=session)
+        reverted_result = [tuple(d.values()) for d in book]
+        book_title_id = reverted_result[1]
+        reverted_result = get_book_title(book_title_id, session=session)
+        genre_id = reverted_result[1]
+        time = dt.now()
+        formatted_time = time.strftime("%d/%m/%Y")
+        update_rgt(genre_id,formatted_time)
+
 
     user_expiry_date = get_users([user_id], session=session)[0]["expiry_date"]
 

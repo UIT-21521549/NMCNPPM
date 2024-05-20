@@ -186,41 +186,31 @@ fines_collection_table = Table(
     Column("amount", Integer, CheckConstraint("amount>0"), nullable=False),
 )
 
-report_by_genre_table = Table(
-    "report_by_genre",
-    metadata_obj,
-    Column("report_id", Integer, primary_key=True),
-    Column("report_date", DateTime),
-)
-
 report_by_genre_detail_table = Table(
     "report_by_genre_detail",
     metadata_obj,
     Column(
-        "report_id", Integer, ForeignKey("report_by_genre.report_id"), primary_key=True
+        "report_id", Integer, primary_key=True
     ),
     Column("genre_id", Integer, ForeignKey("book_genre.genre_id"), primary_key=True),
-    Column("lending_quantity", Integer, nullable=False),
-    Column("ratio", Float, nullable=False),
+    Column("month", String(5) , nullable=False),
+    Column("year" ,String(5), nullable=False),
 )
 
 
-late_return_report_table = Table(
-    "late_return_report",
-    metadata_obj,
-    Column("report_id", Integer, primary_key=True),
-    Column("report_date", DateTime),
-)
 
 late_return_report_detail_table = Table(
     "late_return_report_detail",
     metadata_obj,
-    Column("report_id", Integer, ForeignKey("book.book_id"), primary_key=True),
+    Column(
+        "report_id", Integer , primary_key=True
+    ),
     Column("book_id", Integer, ForeignKey("book.book_id"), primary_key=True),
-    Column("lending_id", Integer, ForeignKey("lending.lending_id"), primary_key=True),
-    Column("num_days_late", Integer),
+    Column("lending_id", Integer, ForeignKey("lending.lending_id"),  nullable=False),
+    Column("month", String(5) , nullable=False),
+    Column("year" ,String(5), nullable=False),
+    Column("day", String(5) , nullable=False),
 )
-
 
 parameter_table = Table(
     "parameter",
