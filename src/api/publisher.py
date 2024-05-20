@@ -24,11 +24,11 @@ def get_one():
 def get_all():
     try:
         with Session() as session:
-            re = BOOK.get_publisher(publisher_id, session=session)
+            re = BOOK.get_publisher(session=session)
     except:
         return "publisher not found", 500
 
-    return result
+    return re
 
 @publisher_api.route("/create", methods=["POST"])
 @auth_decorator(admin_only=True)
