@@ -16,7 +16,8 @@ def get_one():
     try:
         with Session() as session:
             re = BOOK.get_book([book_id], session=session)
-    except:
+    except Exception as e:
+        print(e)
         return "book not found", 400
 
     return re[0]

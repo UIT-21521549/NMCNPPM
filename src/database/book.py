@@ -205,9 +205,16 @@ def get_book(book_ids=None, session=None):
         select(
             book_table,
             publisher_table.c.publisher_name,
+            book_title_table.c[
+                "genre_id",
+                "book_name"
+            ],
+            book_genre_table
         )
         .select_from(book_table)
         .join(publisher_table)
+        .join(book_title_table)
+        .join(book_genre_table)
     )
 
     if book_ids is not None:
@@ -275,6 +282,7 @@ def get_book_title_details(book_title_id, session=None):
     book_title["editions"] = [i._asdict() for i in result]
 
     return book_title
+
 
 
 def add_book_to_receipt(book_receipt_id, book_ids, quantities, session=None):
