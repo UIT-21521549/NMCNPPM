@@ -10,6 +10,7 @@ from .book import book_api
 from .book_receipt import book_receipt_api
 from .image import image_api
 from .book_lending import lending_api
+from .report import report_api
 
 from .parameter import param_api
 
@@ -36,3 +37,5 @@ api.register_blueprint(image_api)
 api.register_blueprint(param_api)
 
 api.register_blueprint(lending_api)
+
+api.register_blueprint(report_api)
