@@ -90,8 +90,9 @@ def create_user():
 
 
 @user_api.route("/get_auth_token", methods=["POST"])
+@auth_decorator(logged_in_required=False)
 def get_token():
-    if request.cookies.get("session_token") is not None:
+    if g.logged_in:
         return "you are already logged in!", 400
 
     data = request.get_json(force=True)
@@ -105,7 +106,8 @@ def get_token():
             result = USER.create_jwt_token(
                 email=data["email"], password=data["password"], session=session
             )
-    except:
+    except Exception as e:
+        print(e)
         return "authentication failed", 400
 
     resp = make_response(result)

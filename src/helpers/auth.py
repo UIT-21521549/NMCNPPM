@@ -9,6 +9,7 @@ def auth_decorator(admin_only=False, logged_in_required=True):
     def _auth_decorator(f):
         @wraps(f)
         def __auth_decorator(*args, **kwargs):
+            g.logged_in = False
 
             token = request.cookies.get("session_token")
             
@@ -31,13 +32,14 @@ def auth_decorator(admin_only=False, logged_in_required=True):
                     
                     resp.delete_cookie('session_token')
 
-                    return resp, 403
+                    return resp, 404
 
                 if admin_only and not payload["is_admin"]:
-                    return "you can't be here", 403
+                    return "you can't be here", 404
 
                 g.user_id = payload["user_id"]
                 g.is_admin = payload["is_admin"]
+                g.logged_in = True
 
             result = f(*args, **kwargs)
             return result
