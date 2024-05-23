@@ -1,10 +1,20 @@
 from sqlalchemy import select, insert, extract, null, desc, asc, update, and_, or_, func
 from sqlalchemy.sql import text, func
-from .models import book_title_table, lending_table, book_table, lending_detail_table, book_genre_table
+from .models import (
+    book_title_table,
+    lending_table,
+    book_table,
+    lending_detail_table,
+    book_genre_table,
+)
 from datetime import datetime, timezone, timedelta, date
 
 
 def get_overdue_lending(day, month, year, session=None):
+
+    day = int(day)
+    month = int(month)
+    year = int(year)
 
     today = datetime(
         day=day,

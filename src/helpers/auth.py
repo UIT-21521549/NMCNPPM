@@ -30,7 +30,7 @@ def auth_decorator(admin_only=False, logged_in_required=True):
                 except:
                     resp = make_response("session token expired!")
                     
-                    resp.delete_cookie('session_token')
+                    # resp.delete_cookie('session_token')
 
                     return resp, 404
 
