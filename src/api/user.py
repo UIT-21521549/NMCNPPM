@@ -162,7 +162,28 @@ def pay_penalty():
 
     return "done"
 
+@user_api.route("/delete_user", methods=["DELETE"])
+@auth_decorator()
+def delete_user():
+    user_id = g.user_id
+    is_admin = g.is_admin
 
+    target_user_id = request.args.get("id")
+
+    if target_user_id is None:
+        target_user_id = user_id
+    
+    if not is_admin and target_user_id != user_id:
+        return "you cant do that", 400
+
+    try:
+        with Session() as session:
+            USER.delete_user(user_id=target_user_id, session=session)
+            session.commit()
+    except Exception as e:
+        return "user not found", 400
+
+    return "user deleted!"
 # @user_api.route("/pay_penalty", methods=["POST"])
 # @auth_decorator(admin_only=True)
 # def get_penalty():

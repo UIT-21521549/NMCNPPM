@@ -266,3 +266,21 @@ def get_penalties_paid(user_id=None, session=None):
     assert len(result) != 0
 
     return [i._asdict() for i in result]
+
+def delete_user(user_id=None, session=None):
+    # set all information field to blank
+    stmt = update(
+        user_table
+    ).where(
+        user_table.c.user_id == user_id
+    ).values(
+        email="",
+        password_hash="",
+        birthday=null(),
+        address="",
+        user_name="",
+        is_admin=False,
+        penalty_owed=0,
+    )
+
+    session.execute(stmt)
