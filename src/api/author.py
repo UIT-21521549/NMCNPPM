@@ -76,3 +76,26 @@ def add_to_book():
         return "errors", 400
 
     return "done!"
+
+
+@author_api.route("/change_name", methods=["POST"])
+@auth_decorator(admin_only=True)
+def change_name():
+    data = request.get_json(force=True)
+
+    for k in ["new_author_name", "author_id"]:
+        if k not in data.keys():
+            return f"{k} needed", 400
+
+    try:
+        with Session() as session:
+            idx = BOOK.change_author_name(
+                author_id=data["author_id"],
+                new_author_name=data["new_author_name"],
+                session=session,
+            )
+            session.commit()
+    except:
+        return "change author name fail", 400
+
+    return "success!"

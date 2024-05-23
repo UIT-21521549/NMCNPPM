@@ -37,6 +37,16 @@ def get_genre(genre_id=None, session=None):
     return [i._asdict() for i in result]
 
 
+def change_genre_name(genre_id, new_genre_name, session=None):
+    stmt = (
+        update(book_genre_table)
+        .where(book_genre_table.c.genre_id == genre_id)
+        .values(genre_name=new_genre_name)
+    )
+
+    session.execute(stmt)
+
+
 def create_author(author_name, session=None):
     stmt = insert(author_table).values(
         author_name=author_name,
@@ -46,6 +56,14 @@ def create_author(author_name, session=None):
 
     # return author_id
     return result.inserted_primary_key[0]
+
+def change_author_name(author_id, new_author_name, session=None):
+    stmt = (
+        update(author_table)
+        .where(author_table.c.author_id == author_id)
+        .values(author_name=new_author_name)
+    )
+    session.execute(stmt)
 
 
 def get_author(author_id=None, session=None):
@@ -71,6 +89,14 @@ def create_publisher(publisher_name, session=None):
 
     # return publisher_id
     return result.inserted_primary_key[0]
+
+def change_publisher_name(publisher_id, new_publisher_name, session=None):
+    stmt = (
+        update(publisher_table)
+        .where(publisher_table.c.publisher_id == publisher_id)
+        .values(publisher_name=new_publisher_name)
+    )
+    session.execute(stmt)
 
 
 def get_publisher(publisher_id=None, session=None):
@@ -205,11 +231,8 @@ def get_book(book_ids=None, session=None):
         select(
             book_table,
             publisher_table.c.publisher_name,
-            book_title_table.c[
-                "genre_id",
-                "book_name"
-            ],
-            book_genre_table
+            book_title_table.c["genre_id", "book_name"],
+            book_genre_table,
         )
         .select_from(book_table)
         .join(publisher_table)
@@ -282,7 +305,6 @@ def get_book_title_details(book_title_id, session=None):
     book_title["editions"] = [i._asdict() for i in result]
 
     return book_title
-
 
 
 def add_book_to_receipt(book_receipt_id, book_ids, quantities, session=None):
