@@ -96,13 +96,10 @@ def get_users(user_ids=None, session=None):
                 "created_at",
                 "is_admin",
                 "expiry_date",
-                "penalty_owed"
+                "penalty_owed",
             ],
             reader_type_table.c.reader_type,
-            fines_collection_table.c[
-                "fine_collection_id",
-                "amount"
-            ]
+            fines_collection_table.c["fine_collection_id", "amount"],
         )
         .join(reader_type_table, isouter=True)
         .join(fines_collection_table, isouter=True)
@@ -140,17 +137,17 @@ def get_users(user_ids=None, session=None):
                         "fine_collection_id": i["fine_collection_id"],
                         "amount": i["amount"],
                     }
-                    for i in items if i["fine_collection_id"] is not None
+                    for i in items
+                    if i["fine_collection_id"] is not None
                 ],
             }
         )
 
     return result
 
+
 def get_user_by_email(user_email, session=None):
-    stmt = select(user_table.c.user_id).where(
-        user_table.c.email==user_email
-    )
+    stmt = select(user_table.c.user_id).where(user_table.c.email == user_email)
     rows = session.execute(stmt).all()
 
     user_id = [i._asdict()["user_id"] for i in rows]
@@ -267,20 +264,67 @@ def get_penalties_paid(user_id=None, session=None):
 
     return [i._asdict() for i in result]
 
+
 def delete_user(user_id=None, session=None):
     # set all information field to blank
-    stmt = update(
-        user_table
-    ).where(
-        user_table.c.user_id == user_id
-    ).values(
-        email="",
-        password_hash="",
-        birthday=null(),
-        address="",
-        user_name="",
-        is_admin=False,
-        penalty_owed=0,
+    stmt = (
+        update(user_table)
+        .where(user_table.c.user_id == user_id)
+        .values(
+            email="",
+            password_hash="",
+            birthday=null(),
+            address="",
+            user_name="",
+            is_admin=False,
+            penalty_owed=0,
+        )
+    )
+
+    session.execute(stmt)
+
+
+def update_user(
+    email=None,
+    birthday=None,
+    address=None,
+    password=None,
+    user_name=None,
+    user_id=None,
+    reader_type_id=None,
+    session=None,
+):
+    password_hash = sha256(str(password).encode("utf-8")).hexdigest()
+
+    if birthday is not None:
+        birthday = datetime.strptime(birthday, "%d-%m-%Y").date()
+        # age = calculate_age(birthday)
+        # assert minimum_age <= age and maximum_age > age
+
+    # Tạo câu lệnh update với các giá trị mặc định
+    stmt = (
+        update(user_table)
+        .where(user_table.c.user_id == user_id)
+        .values(
+            {
+                "email": email if email is not None else user_table.c.email,
+                "password_hash": (
+                    password_hash
+                    if password_hash is not None
+                    else user_table.c.password_hash
+                ),
+                "birthday": birthday if birthday is not None else user_table.c.birthday,
+                "address": address if address is not None else user_table.c.address,
+                "user_name": (
+                    user_name if user_name is not None else user_table.c.user_name
+                ),
+                "reader_type_id": (
+                    reader_type_id
+                    if reader_type_id is not None
+                    else user_table.c.reader_type_id
+                ),
+            }
+        )
     )
 
     session.execute(stmt)

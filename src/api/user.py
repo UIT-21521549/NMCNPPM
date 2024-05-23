@@ -162,6 +162,7 @@ def pay_penalty():
 
     return "done"
 
+
 @user_api.route("/delete_user", methods=["DELETE"])
 @auth_decorator()
 def delete_user():
@@ -172,7 +173,7 @@ def delete_user():
 
     if target_user_id is None:
         target_user_id = user_id
-    
+
     if not is_admin and target_user_id != user_id:
         return "you cant do that", 400
 
@@ -185,7 +186,8 @@ def delete_user():
 
     return "user deleted!"
 
-@user_api.route("/update", methods=["PATCH"])
+
+@user_api.route("/update_user", methods=["PATCH"])
 @auth_decorator()
 def update_user():
 
@@ -193,19 +195,29 @@ def update_user():
     email = request.args.get("email")
     birthday = request.args.get("birthday")
     address = request.args.get("address")
-    password_hash = request.args.get("password_hash")
+    password = request.args.get("password")
     user_name = request.args.get("user_name")
+    reader_type_id = request.args.get("reader_type_id")
 
     try:
         with Session() as session:
-            USER.update(email = email, birthday = birthday,address = address,
-                        password_hash = password_hash , user_name = user_name, 
-                        user_id=user_id, session=session)
+            USER.update_user(
+                email=email,
+                birthday=birthday,
+                address=address,
+                password=password,
+                user_name=user_name,
+                reader_type_id=reader_type_id,
+                user_id=user_id,
+                session=session,
+            )
             session.commit()
     except Exception as e:
+        print(e)
         return "user not found", 400
 
     return "user updated!"
+
 
 # @user_api.route("/pay_penalty", methods=["POST"])
 # @auth_decorator(admin_only=True)
