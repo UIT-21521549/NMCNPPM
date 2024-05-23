@@ -92,8 +92,8 @@ def create_user():
 @user_api.route("/get_auth_token", methods=["POST"])
 @auth_decorator(logged_in_required=False)
 def get_token():
-    if g.logged_in:
-        return "you are already logged in!", 400
+    # if g.logged_in:
+    #     return "you are already logged in!", 400
 
     data = request.get_json(force=True)
 

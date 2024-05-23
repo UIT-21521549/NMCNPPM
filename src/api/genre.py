@@ -7,12 +7,13 @@ from src.database import BOOK, Session
 
 genre_api = Blueprint("genre", __name__, url_prefix="/genre")
 
+
 @genre_api.route("/get_one", methods=["GET"])
 def get_one():
     genre_id = request.args.get("id")
     if genre_id is None:
         return "id required", 400
-    
+
     try:
         with Session() as session:
             rd = BOOK.get_genre(genre_id, session=session)
@@ -21,6 +22,7 @@ def get_one():
 
     return rd[0]
 
+
 @genre_api.route("/get_all", methods=["GET"])
 def get_all():
     try:
@@ -28,8 +30,9 @@ def get_all():
             result = BOOK.get_genre(session=session)
     except:
         return "genre not found", 500
-    
+
     return result
+
 
 @genre_api.route("/create", methods=["POST"])
 @auth_decorator(admin_only=True)
@@ -46,8 +49,28 @@ def create():
             session.commit()
     except:
         return "create genre fail", 400
-        
-    return {
-        "genre_id": idx 
-    }
 
+    return {"genre_id": idx}
+
+
+@genre_api.route("/change_name", methods=["POST"])
+@auth_decorator(admin_only=True)
+def change_name():
+    data = request.get_json(force=True)
+
+    for k in ["new_genre_name", "genre_id"]:
+        if k not in data.keys():
+            return f"{k} needed", 400
+
+    try:
+        with Session() as session:
+            idx = BOOK.change_genre_name(
+                genre_id=data["genre_id"],
+                new_genre_name=data["new_genre_name"],
+                session=session,
+            )
+            session.commit()
+    except:
+        return "change genre name fail", 400
+
+    return "success!"
