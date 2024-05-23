@@ -27,7 +27,7 @@ user_table = Table(
         nullable=True,
     ),
     # login with email and password
-    Column("email", String, nullable=False, unique=True),
+    Column("email", String, nullable=True, unique=True),
     Column("password_hash", String, nullable=False),
     Column("birthday", DateTime),
     Column("address", String),

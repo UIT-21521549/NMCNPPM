@@ -172,7 +172,10 @@ def delete_user():
     target_user_id = request.args.get("id")
 
     if target_user_id is None:
-        target_user_id = user_id
+        return "id required", 400
+
+    # if target_user_id is None:
+    #     target_user_id = user_id
 
     if not is_admin and target_user_id != user_id:
         return "you cant do that", 400

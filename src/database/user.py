@@ -124,6 +124,7 @@ def get_users(user_ids=None, session=None):
             {
                 "user_id": idx,
                 "reader_type_id": items[0]["reader_type_id"],
+                "reader_type": items[0]["reader_type"],
                 "email": items[0]["email"],
                 "birthday": items[0]["birthday"],
                 "address": items[0]["reader_type_id"],
@@ -271,13 +272,14 @@ def delete_user(user_id=None, session=None):
         update(user_table)
         .where(user_table.c.user_id == user_id)
         .values(
-            email="",
+            email=null(),
             password_hash="",
             birthday=null(),
             address="",
             user_name="",
             is_admin=False,
             penalty_owed=0,
+            reader_type_id=null()
         )
     )
 
