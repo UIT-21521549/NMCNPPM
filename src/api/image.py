@@ -56,7 +56,8 @@ def add_to_book():
     if "file" not in request.files.keys():
         return "image file needed", 400
 
-
+    print(request.files["file"])
+    
     try:
         with Session() as session:
             img_file = request.files["file"]

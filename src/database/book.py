@@ -57,6 +57,7 @@ def create_author(author_name, session=None):
     # return author_id
     return result.inserted_primary_key[0]
 
+
 def change_author_name(author_id, new_author_name, session=None):
     stmt = (
         update(author_table)
@@ -90,6 +91,7 @@ def create_publisher(publisher_name, session=None):
     # return publisher_id
     return result.inserted_primary_key[0]
 
+
 def change_publisher_name(publisher_id, new_publisher_name, session=None):
     stmt = (
         update(publisher_table)
@@ -115,14 +117,21 @@ def get_publisher(publisher_id=None, session=None):
     return [i._asdict() for i in result]
 
 
-def create_book_title(book_name, genre_id, session=None):
+def create_book_title(book_name, genre_id, author_ids=[], session=None):
 
     stmt = insert(book_title_table).values(book_name=book_name, genre_id=genre_id)
 
     result = session.execute(stmt)
 
+    book_title_id = result.inserted_primary_key[0]
+
+    if len(author_ids) != 0:
+        add_authors_to_book(
+            book_title_id=book_title_id, author_ids=author_ids, session=session
+        )
+
     # return book_title_id
-    return result.inserted_primary_key[0]
+    return book_title_id
 
 
 def get_book_title(book_title_ids=None, session=None):

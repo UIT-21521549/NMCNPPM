@@ -23,6 +23,7 @@ def get_one():
 
     return re[0]
 
+
 @book_title_api.route("/get_many", methods=["GET"])
 def get_many():
     data = request.get_json(force=True)
@@ -42,6 +43,7 @@ def get_many():
 
     return re
 
+
 @book_title_api.route("/get_all", methods=["GET"])
 def get_all():
 
@@ -52,6 +54,7 @@ def get_all():
         return "book_title not found", 500
 
     return result
+
 
 @book_title_api.route("/get_detail", methods=["GET"])
 def get_detail():
@@ -86,6 +89,7 @@ def search():
 
     return result
 
+
 @book_title_api.route("/get_new_books", methods=["GET"])
 def get_new_books():
     n = request.args.get("n")
@@ -102,22 +106,27 @@ def get_new_books():
 
     return result
 
+
 @book_title_api.route("/create", methods=["POST"])
 @auth_decorator(admin_only=True)
 def create():
     data = request.get_json(force=True)
 
-    for k in ["book_name", "genre_id"]:
+    for k in ["book_name", "genre_id", "author_ids"]:
         if k not in data.keys():
             return f"{k} needed", 400
 
     try:
         with Session() as session:
             idx = BOOK.create_book_title(
-                book_name=data["book_name"], genre_id=data["genre_id"], session=session
+                book_name=data["book_name"],
+                genre_id=data["genre_id"],
+                author_ids=data["author_ids"],
+                session=session,
             )
             session.commit()
-    except:
+    except Exception as e:
+        print(e)
         return "create book_title fail", 400
 
     return {"book_title_id": idx}
