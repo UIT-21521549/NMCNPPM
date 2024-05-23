@@ -217,9 +217,3 @@ def update_user():
         return "user not found", 400
 
     return "user updated!"
-
-
-# @user_api.route("/pay_penalty", methods=["POST"])
-# @auth_decorator(admin_only=True)
-# def get_penalty():
-#     publisher_id = request.args.get("id")
