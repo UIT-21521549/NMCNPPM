@@ -50,3 +50,26 @@ def create():
         "publisher_id": idx 
     }
 
+
+
+@publisher_api.route("/change_name", methods=["POST"])
+@auth_decorator(admin_only=True)
+def change_name():
+    data = request.get_json(force=True)
+
+    for k in ["new_publisher_name", "publisher_id"]:
+        if k not in data.keys():
+            return f"{k} needed", 400
+
+    try:
+        with Session() as session:
+            idx = BOOK.change_publisher_name(
+                publisher_id=data["publisher_id"],
+                new_publisher_name=data["new_publisher_name"],
+                session=session,
+            )
+            session.commit()
+    except:
+        return "change publisher name fail", 400
+
+    return "success!"

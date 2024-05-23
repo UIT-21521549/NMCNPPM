@@ -57,6 +57,14 @@ def create_author(author_name, session=None):
     # return author_id
     return result.inserted_primary_key[0]
 
+def change_author_name(author_id, new_author_name, session=None):
+    stmt = (
+        update(author_table)
+        .where(author_table.c.author_id == author_id)
+        .values(author_name=new_author_name)
+    )
+    session.execute(stmt)
+
 
 def get_author(author_id=None, session=None):
     # return all if author_id is None
@@ -81,6 +89,14 @@ def create_publisher(publisher_name, session=None):
 
     # return publisher_id
     return result.inserted_primary_key[0]
+
+def change_publisher_name(publisher_id, new_publisher_name, session=None):
+    stmt = (
+        update(publisher_table)
+        .where(publisher_table.c.publisher_id == publisher_id)
+        .values(publisher_name=new_publisher_name)
+    )
+    session.execute(stmt)
 
 
 def get_publisher(publisher_id=None, session=None):
