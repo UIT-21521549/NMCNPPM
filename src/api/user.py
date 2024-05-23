@@ -5,7 +5,7 @@ from flask import jsonify
 from flask import g
 from src.helpers.auth import auth_decorator
 
-from src.database import USER, Session
+from src.database import USER, Session, LENDING
 
 user_api = Blueprint("user", __name__, url_prefix="/user")
 # https://stackoverflow.com/questions/10434599/get-the-data-received-in-a-flask-request
@@ -25,6 +25,22 @@ def get_one():
         return "user not found", 400
 
     return users[0]
+
+@user_api.route("delete_one", methods=["DELETE"])
+def delete_one():
+    user_id = request.args.get("id")
+    if not user_id:
+        return jsonify({"error": u"Thiếu ID người dùng"}), 400
+
+    with Session() as session:
+        er = LENDING.get_lending_by_user_id(user_id=user_id, session=session)
+        if er:
+            return jsonify({"error": u"Không thể xóa"}), 404
+        
+        USER.delete_user(user_id=user_id, session=session)
+        session.commit()
+        return jsonify({"message": u"Xóa thành công"}), 200
+
 
 
 @user_api.route("/get_by_email", methods=["GET"])

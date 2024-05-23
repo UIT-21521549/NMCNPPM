@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, null, update
+from sqlalchemy import select, insert, null, update, delete, exc
 import jwt
 import os
 from datetime import datetime, timezone, timedelta, date
@@ -266,3 +266,10 @@ def get_penalties_paid(user_id=None, session=None):
     assert len(result) != 0
 
     return [i._asdict() for i in result]
+
+
+
+def delete_user(user_id=None, session=None):
+    smt = delete(user_table).where(user_table.c.user_id == user_id )
+    result = session.execute(smt)
+    
