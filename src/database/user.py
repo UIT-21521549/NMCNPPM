@@ -99,7 +99,7 @@ def get_users(user_ids=None, session=None):
                 "penalty_owed",
             ],
             reader_type_table.c.reader_type,
-            fines_collection_table.c["fine_collection_id", "amount"],
+            fines_collection_table.c["fine_collection_id", "amount", "created_at"],
         )
         .join(reader_type_table, isouter=True)
         .join(fines_collection_table, isouter=True)
@@ -137,6 +137,7 @@ def get_users(user_ids=None, session=None):
                     {
                         "fine_collection_id": i["fine_collection_id"],
                         "amount": i["amount"],
+                        "created_at": i["created_at"],
                     }
                     for i in items
                     if i["fine_collection_id"] is not None

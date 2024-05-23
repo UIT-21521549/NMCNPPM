@@ -184,6 +184,7 @@ fines_collection_table = Table(
     Column("fine_collection_id", Integer, primary_key=True),
     Column("user_id", Integer, ForeignKey("user.user_id"), nullable=False),
     Column("amount", Integer, CheckConstraint("amount>0"), nullable=False),
+    Column("created_at", DateTime, nullable=False, server_default=func.now()),
 )
 
 report_by_genre_table = Table(
