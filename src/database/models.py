@@ -76,7 +76,7 @@ author_table = Table(
     "author",
     metadata_obj,
     Column("author_id", Integer, primary_key=True),
-    Column("author_name", String(30), nullable=False, unique=True),
+    Column("author_name", String(30),  unique=True),
 )
 
 
