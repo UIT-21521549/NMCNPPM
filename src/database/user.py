@@ -284,3 +284,21 @@ def delete_user(user_id=None, session=None):
     )
 
     session.execute(stmt)
+
+def update(email=None, birthday=None, address=None, password_hash=None, user_name = None, user_id=None, session=None):
+    # Tạo câu lệnh update với các giá trị mặc định
+    stmt = update(
+        user_table
+    ).where(
+        user_table.c.user_id == user_id
+    ).values(
+        {
+            "email": email if email is not None else user_table.c.email,
+            "password_hash": password_hash if password_hash is not None else user_table.c.password_hash,
+            "birthday": birthday if birthday is not None else user_table.c.birthday,
+            "address": address if address is not None else user_table.c.address,
+            "user_name": user_name if user_name is not None else user_table.c.user_name
+        }
+    )
+
+    session.execute(stmt)

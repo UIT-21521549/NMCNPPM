@@ -184,6 +184,28 @@ def delete_user():
         return "user not found", 400
 
     return "user deleted!"
+
+@user_api.route("/update", methods=["PATCH"])
+@auth_decorator()
+def delete_user():
+
+    user_id = request.args.get("id")
+    email = request.args.get("email")
+    birthday = request.args.get("birthday")
+    address = request.args.get("address")
+    password_hash = request.args.get("password_hash")
+    user_name = request.args.get("user_name")
+
+    try:
+        with Session() as session:
+            USER.update(email = email, birthday = birthday,address = address,
+                        password_hash = password_hash , user_name = user_name, 
+                        user_id=user_id, session=session)
+            session.commit()
+    except Exception as e:
+        return "user not found", 400
+
+    return "user updated!"
 # @user_api.route("/pay_penalty", methods=["POST"])
 # @auth_decorator(admin_only=True)
 # def get_penalty():
