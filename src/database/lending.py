@@ -1,9 +1,9 @@
-from sqlalchemy import select, insert, null, update
+from sqlalchemy import select, insert, null, update, and_
 from .connection import Session, debug_mode
 from datetime import datetime, timezone, timedelta, date
 from sqlalchemy.sql import func
 from .parameters import get_parameter
-from .user import get_users
+from .user import get_users, check_account_expiry
 
 from .models import (
     lending_table,
@@ -13,6 +13,59 @@ from .models import (
     user_table,
 )
 import random
+from datetime import datetime, timezone, timedelta, date
+
+
+def check_overdue_lending(user_id, session=None):
+    today = datetime.today()
+
+    stmt = (
+        select(lending_table.c.user_id)
+        .select_from(lending_table)
+        .where(
+            and_(
+                lending_table.c.user_id == user_id,
+                lending_table.c.return_deadline < today,
+            )
+        )
+    )
+
+    result = session.execute(stmt).all()
+    result = [i._asdict()["user_id"] for i in result]
+
+    assert len(result) == 0
+
+
+def check_lending_quantity(user_id, session=None):
+    maximum_lending_quantity = get_parameter(
+        "maximum_lending_quantity", session=session
+    )
+
+    sum1 = func.sum(lending_detail_table.c.quantity).label("currently_lending")
+
+    stmt = (
+        select(sum1)
+        .select_from(lending_table)
+        .join(lending_detail_table)
+        .where(
+            and_(
+                lending_table.c.user_id == user_id,
+                lending_table.c.return_date == None,  # have not been returned yet
+            )
+        )
+    )
+
+    result = session.execute(stmt).all()
+    result = [i._asdict()["currently_lending"] for i in result]
+
+    assert len(result) == 1
+
+    currently_lending = result[0]
+
+    if currently_lending is None:
+        currently_lending = 0
+
+    assert currently_lending < maximum_lending_quantity
 
 
 def add_book_to_lending(lending_id, book_ids, quantities, session=None):
@@ -37,11 +90,11 @@ def add_book_to_lending(lending_id, book_ids, quantities, session=None):
 
 def create_book_lending(user_id, book_ids=[], quantities=[], session=None):
 
-    user_expiry_date = get_users([user_id], session=session)[0]["expiry_date"]
+    # return error if account is expired
+    check_account_expiry(user_id=user_id, session=session)
 
-    diff = datetime.now() - user_expiry_date
-
-    assert diff.days < 0
+    # return error if account has overdue lending
+    check_overdue_lending(user_id=user_id, session=session)
 
     assert len(book_ids) == len(quantities)
 
@@ -75,6 +128,9 @@ def create_book_lending(user_id, book_ids=[], quantities=[], session=None):
             quantities=quantities,
             session=session,
         )
+
+    # return error if account borrows more than maximum_lending_quantity books
+    check_lending_quantity(user_id=user_id, session=session)
 
     return lending_id
 
@@ -170,16 +226,15 @@ def return_lending(lending_id, session=None):
         )
         session.execute(stmt)
 
+
 def get_lending_by_user_id(user_id, session=None):
 
-    stmt = select(lending_table.c.lending_id).where(
-        lending_table.c.user_id == user_id
-    )
+    stmt = select(lending_table.c.lending_id).where(lending_table.c.user_id == user_id)
     result = session.execute(stmt).all()
 
     lending_ids = [i[0] for i in result]
 
     if len(lending_ids) == 0:
         return []
-    
+
     return get_lending(lending_ids=lending_ids, session=session)

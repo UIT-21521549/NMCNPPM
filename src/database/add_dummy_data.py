@@ -3,8 +3,13 @@ from .connection import Session, create_new
 import src.database.book as BOOK
 import src.database.user as USER
 import src.database.lending as LENDING
+import src.database.image as IMAGE
 import random, string
+from datetime import datetime, timezone, timedelta, date
 
+
+import gdown
+import os
 
 def randomword(length):
     letters = string.ascii_lowercase
@@ -16,7 +21,39 @@ def random_suffix(length):
     return "".join(random.choice(letters) for i in range(length))
 
 
+def download_stock_image():
+    image_dir = "./images_upload"
+
+    if len(os.listdir("./images_upload")) != 1:
+        return
+
+    os.makedirs(image_dir, exist_ok=True)
+
+    gid = "10iDiM9cbaGK08ma_W1yOCW2lZhxGjZvJ"
+
+    gdown.download_folder(id=gid, output=image_dir, resume=True)
+
+def list_img_dir():
+    file_names = os.listdir("./images_upload")
+    file_names = [f for f in file_names if not f.endswith("default.jpg")]
+
+    fp = [os.path.join("./images_upload", f) for f in file_names]
+
+    return [(i, j) for i, j in zip(fp, file_names)]
+
+def get_random_image():
+
+    selections = [i for i in list_img_dir()]
+
+    idx = random.choice(range(len(selections)))
+
+    return selections[idx]
+
 def set_up(session):
+
+    download_stock_image()
+
+    today_year = datetime.today().year
 
     for rt in ["X", "Y"]:
         USER.create_reader_type(reader_type=rt, session=session)
@@ -58,10 +95,21 @@ def set_up(session):
             session=session,
         )
 
+        # if random.random() < 0.3:
+            # add image to book
+        fp, fn = get_random_image()
+        IMAGE.add_image_to_book_title(
+            book_title_id=b_id,
+            image_file_name=fn,
+            file_path=fp,
+            session=session,
+        )
+
+        
     for i in range(30):
         BOOK.create_book(
             book_title_id=random.randrange(1, 21),
-            publication_year=random.randrange(1900, 2050),
+            publication_year=random.randrange(today_year-3, 2025),
             publisher_id=random.randrange(1, 11),
             price=random.randrange(10, 100),
             session=session,
@@ -70,6 +118,15 @@ def set_up(session):
         BOOK.create_book_receipt(
             book_ids=[i + 1],
             quantities=[random.randrange(1, 30)],
+            session=session,
+        )
+
+    for i in range(30):
+        BOOK.create_book(
+            book_title_id=random.randrange(1, 21),
+            publication_year=random.randrange(1900, 2050),
+            publisher_id=random.randrange(1, 11),
+            price=random.randrange(10, 100),
             session=session,
         )
 
@@ -100,3 +157,5 @@ def set_up(session):
             amount=30,
             session=session
         )
+    
+    # add image to book

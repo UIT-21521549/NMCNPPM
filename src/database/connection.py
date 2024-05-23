@@ -22,7 +22,7 @@ debug_mode = False
 if os.getenv("debug_mode"):
     debug_mode = True
 
-db_engine = create_engine(connection_string, echo=True)
+db_engine = create_engine(connection_string, echo=False)
 
 event.listen(db_engine, "connect", _fk_pragma_on_connect)
 

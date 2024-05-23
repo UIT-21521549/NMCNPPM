@@ -6,10 +6,12 @@ import src.database.lending as LENDING
 import src.database.report as REPORT
 
 import src.database.image as IMAGE
-from .add_dummy_data import set_up
+from .add_dummy_data import set_up, download_stock_image
 import os
 
 if create_new:
+    # download_stock_image()
+
     admin_password = os.getenv("admin_password")
     session = Session()
     # add parameters
@@ -33,7 +35,8 @@ if create_new:
                 with Session() as session:
                     set_up(session)
                     session.commit()
-            except:
+            except Exception as e:
+                print(e)
                 continue
             
             print("success!")

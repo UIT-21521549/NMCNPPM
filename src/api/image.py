@@ -71,8 +71,8 @@ def add_to_book():
                 session=session,
             )
             session.commit()
-            IMAGE.remove_orphaned_images(session)
-            session.commit()
+            # IMAGE.remove_orphaned_images(session)
+            # session.commit()
     except Exception as e:
         print(e)
         try:

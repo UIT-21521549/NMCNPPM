@@ -54,7 +54,8 @@ def create():
                 session=session
             )
             session.commit()
-    except:
+    except Exception as e:
+        print(e)
         return "create book_receipt fail", 400
 
     return {"book_receipt_id": idx}

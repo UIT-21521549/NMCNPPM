@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, null, update
+from sqlalchemy import select, insert, null, update, and_
 import jwt
 import os
 from datetime import datetime, timezone, timedelta, date
@@ -146,6 +146,14 @@ def get_users(user_ids=None, session=None):
         )
 
     return result
+
+def check_account_expiry(user_id, session=None):
+    user_expiry_date = get_users([user_id], session=session)[0]["expiry_date"]
+
+    diff = datetime.now() - user_expiry_date
+
+    assert diff.days < 0
+
 
 
 def get_user_by_email(user_email, session=None):

@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, null, desc, asc, update, or_, func
+from sqlalchemy import select, insert, null, desc, asc, update, or_, func, and_
 from sqlalchemy.sql import text
 from .models import (
     book_title_table,
@@ -10,7 +10,9 @@ from .models import (
     book_receipt_table,
     book_receipt_detail_table,
 )
+from .parameters import get_parameter
 
+from datetime import datetime, timezone, timedelta, date
 
 def create_genre(genre_name, session=None):
     stmt = insert(book_genre_table).values(
@@ -232,6 +234,32 @@ def create_book(book_title_id, publication_year, publisher_id, price, session=No
     # return book_id
     return result.inserted_primary_key[0]
 
+def check_book_publication_year(book_id, session=None):
+
+
+    maximum_publication_year_gab = get_parameter(
+        "maximum_publication_year_gab", session=session
+    )
+    today_year = datetime.today().year
+
+    lower_bound = today_year - maximum_publication_year_gab
+
+    stmt = select(
+        book_table.c.book_id
+    ).where(
+        and_(
+            book_table.c.book_id == book_id,
+            book_table.c.publication_year >= lower_bound
+        )
+    )
+
+    result = session.execute(stmt).all()
+    result = [i._asdict()["book_id"] for i in result]
+
+
+    assert len(result) == 1
+
+    assert book_id in result
 
 def get_book(book_ids=None, session=None):
     # return all if book_ids is None
@@ -317,6 +345,10 @@ def get_book_title_details(book_title_id, session=None):
 
 
 def add_book_to_receipt(book_receipt_id, book_ids, quantities, session=None):
+    
+    # check the publication year
+    for bid in book_ids:
+        check_book_publication_year(book_id=bid, session=session)
 
     session.execute(
         insert(book_receipt_detail_table),

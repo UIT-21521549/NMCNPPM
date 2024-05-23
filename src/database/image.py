@@ -58,6 +58,8 @@ def remove_images(image_ids, session):
 
 def remove_orphaned_images(session):
 
+    return
+
     stmt = select(image_table.c.image_id, book_title_table.c.book_title_id).join(
         book_title_table, isouter=True
     ).where(book_title_table.c.book_title_id == None)
