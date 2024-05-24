@@ -279,7 +279,7 @@ def delete_user(user_id=None, session=None):
     # set all information field to blank
     stmt = (
         update(user_table)
-        .where(user_table.c.user_id == user_id)
+        .where(and_(user_table.c.user_id == user_id, user_table.c.is_admin != True))
         .values(
             email=null(),
             password_hash="",
