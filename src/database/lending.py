@@ -204,8 +204,8 @@ def return_lending(lending_id, session=None):
     # calculate the penalty
     days_late = (return_date - return_deadline).days
 
-    if debug_mode:
-        days_late = random.randrange(0, 10)
+    # if debug_mode:
+    #     days_late = random.randrange(0, 10)
 
     if days_late > 0:
         penalty = days_late * 1000 * sum([i["quantity"] for i in lending["items"]])

@@ -227,12 +227,12 @@ parameter_table = Table(
     "parameter",
     metadata_obj,
     Column("id_lock", Integer, CheckConstraint("id_lock<=1"), primary_key=True),
-    Column("minimum_age", Integer),
-    Column("maximum_age", Integer),
-    Column("maximum_account_age", Integer),
-    Column("maximum_publication_year_gab", Integer),
-    Column("maximum_lending_quantity", Integer),
-    Column("maximum_lending_period", Integer),
+    Column("minimum_age", Integer, CheckConstraint("minimum_age>1")),
+    Column("maximum_age", Integer, CheckConstraint("maximum_age>1")),
+    Column("maximum_account_age", Integer, CheckConstraint("maximum_account_age>1")),
+    Column("maximum_publication_year_gab", Integer, CheckConstraint("maximum_publication_year_gab>1")),
+    Column("maximum_lending_quantity", Integer, CheckConstraint("maximum_lending_quantity>1")),
+    Column("maximum_lending_period", Integer, CheckConstraint("maximum_lending_period>1")),
     CheckConstraint("minimum_age < maximum_age"),
 )
 

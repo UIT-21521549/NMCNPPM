@@ -75,10 +75,16 @@ def set_up(session):
             session=session,
         )
 
+
+    for genre_name in ["A", "B", "C"]:
+        BOOK.create_genre(genre_name, session=session)
+
+    
+    for _ in range(100):
+        BOOK.create_author(f"author{random_suffix(5)}", session=session)
+
     for i in range(10):
         BOOK.create_genre(f"genre{random_suffix(4)}", session=session)
-
-        BOOK.create_author(f"author{random_suffix(4)}", session=session)
 
         BOOK.create_publisher(f"publisher{random_suffix(4)}", session=session)
 
@@ -151,11 +157,11 @@ def set_up(session):
     for i in range(1, 7):
         LENDING.return_lending(lending_id=i, session=session)
 
-    for j in range(3):
-        USER.pay_penalty(
-            user_id=2,
-            amount=30,
-            session=session
-        )
+    # for j in range(3):
+    #     USER.pay_penalty(
+    #         user_id=2,
+    #         amount=30,
+    #         session=session
+    #     )
     
     # add image to book
