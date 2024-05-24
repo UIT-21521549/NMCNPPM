@@ -10,7 +10,7 @@ lending_api = Blueprint("book_lending", __name__, url_prefix="/lending")
 
 
 @lending_api.route("/get_one", methods=["GET"])
-@auth_decorator(admin_only=True)
+@auth_decorator()
 def get_one():
     lending_id = request.args.get("id")
 
@@ -27,7 +27,7 @@ def get_one():
 
 
 @lending_api.route("/get_by_user", methods=["GET"])
-@auth_decorator(admin_only=True)
+@auth_decorator()
 def get_by_user_id():
     user_id = request.args.get("id")
 
